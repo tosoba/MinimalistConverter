@@ -1,0 +1,1 @@
+enum CurrencyDisplayType { RED, WHITE }
