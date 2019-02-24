@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:minimalist_converter/common/models/currency_display_type.dart';
+import 'package:minimalist_converter/common/models/inset_type.dart';
 import 'package:minimalist_converter/common/values/colors.dart';
-
-//TODO: padding to avoid overlapping with arrow button in the middle
+import 'package:minimalist_converter/common/values/dimensions.dart';
 
 class CurrencyDisplayWidget extends StatelessWidget {
   final CurrencyDisplayType _displayType;
   final String _fontFamily = 'Quicksand';
+
+  final double _arrowButtonSideEdgeInsetValue = arrowButtonDimension / 2 + 15.0;
+  final double _differentSideEdgeInsetValue = arrowButtonDimension / 2 - 10.0;
 
   Color get _backgroundColor => colors[_displayType];
 
@@ -39,49 +42,111 @@ class CurrencyDisplayWidget extends StatelessWidget {
             )),
       );
 
-  Widget _currencyShortNameWidget() => Text(
-        'short name',
-        textAlign: TextAlign.center,
-        style: TextStyle(
-            color: _textColor,
-            fontSize: 17.0,
-            fontFamily: _fontFamily,
-            fontWeight: FontWeight.bold),
-      );
+  Widget _currencyShortNameWidget() {
+    return Text(
+      'short name',
+      textAlign: TextAlign.center,
+      style: TextStyle(
+          color: _textColor,
+          fontSize: 17.0,
+          fontFamily: _fontFamily,
+          fontWeight: FontWeight.bold),
+    );
+  }
 
-  OrientationBuilder _mainColumn() =>
-      OrientationBuilder(builder: (context, orientation) {
-        if (orientation == Orientation.portrait &&
-            _displayType == CurrencyDisplayType.WHITE) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              _currencyShortNameWidget(),
-              _currencyValueWidget(),
-              _currencyLongNameWidget()
-            ],
-          );
-        } else {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              _currencyLongNameWidget(),
-              _currencyValueWidget(),
-              _currencyShortNameWidget()
-            ],
-          );
-        }
-      });
+  EdgeInsets _edgeInsets(InsetType insetType, double insetValue) {
+    switch (insetType) {
+      case InsetType.LEFT:
+        return EdgeInsets.only(left: insetValue);
+      case InsetType.RIGHT:
+        return EdgeInsets.only(right: insetValue);
+      case InsetType.TOP:
+        return EdgeInsets.only(top: insetValue);
+      case InsetType.BOTTOM:
+        return EdgeInsets.only(bottom: insetValue);
+    }
+  }
+
+  List<Widget> _columnWidgets(BuildContext context) {
+    final orientation = MediaQuery.of(context).orientation;
+    if (orientation == Orientation.portrait) {
+      if (_displayType == CurrencyDisplayType.RED) {
+        return [
+          Padding(
+            child: _currencyLongNameWidget(),
+            padding: _edgeInsets(InsetType.TOP, _differentSideEdgeInsetValue),
+          ),
+          _currencyValueWidget(),
+          Padding(
+            child: _currencyShortNameWidget(),
+            padding:
+                _edgeInsets(InsetType.BOTTOM, _arrowButtonSideEdgeInsetValue),
+          )
+        ];
+      } else {
+        return [
+          Padding(
+            child: _currencyShortNameWidget(),
+            padding: _edgeInsets(InsetType.TOP, _arrowButtonSideEdgeInsetValue),
+          ),
+          _currencyValueWidget(),
+          Padding(
+            child: _currencyLongNameWidget(),
+            padding:
+                _edgeInsets(InsetType.BOTTOM, _differentSideEdgeInsetValue),
+          )
+        ];
+      }
+    } else {
+      if (_displayType == CurrencyDisplayType.RED) {
+        return [
+          Padding(
+            child: _currencyLongNameWidget(),
+            padding: _edgeInsets(InsetType.TOP, _differentSideEdgeInsetValue),
+          ),
+          Padding(
+            child: _currencyValueWidget(),
+            padding:
+                _edgeInsets(InsetType.RIGHT, _arrowButtonSideEdgeInsetValue),
+          ),
+          Padding(
+            child: _currencyShortNameWidget(),
+            padding:
+                _edgeInsets(InsetType.BOTTOM, _differentSideEdgeInsetValue),
+          )
+        ];
+      } else {
+        return [
+          Padding(
+            child: _currencyLongNameWidget(),
+            padding: _edgeInsets(InsetType.TOP, _differentSideEdgeInsetValue),
+          ),
+          Padding(
+            child: _currencyValueWidget(),
+            padding:
+                _edgeInsets(InsetType.LEFT, _arrowButtonSideEdgeInsetValue),
+          ),
+          Padding(
+            child: _currencyShortNameWidget(),
+            padding:
+                _edgeInsets(InsetType.BOTTOM, _differentSideEdgeInsetValue),
+          )
+        ];
+      }
+    }
+  }
+
+  Widget _mainColumn(BuildContext context) {
+    return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: _columnWidgets(context));
+  }
 
   CurrencyDisplayWidget(this._displayType);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: _backgroundColor,
-      child: _mainColumn()
-    );
+    return Container(color: _backgroundColor, child: _mainColumn(context));
   }
 }
