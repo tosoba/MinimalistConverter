@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:minimalist_converter/common/models/currency_display_type.dart';
 import 'package:minimalist_converter/common/models/inset_type.dart';
 import 'package:minimalist_converter/common/values/colors.dart';
 import 'package:minimalist_converter/common/values/dimensions.dart';
+import 'package:minimalist_converter/widgets/currency_display/currency_display_bloc.dart';
+import 'package:minimalist_converter/widgets/currency_display/currency_display_state.dart';
 
 class CurrencyDisplayWidget extends StatelessWidget {
   final CurrencyDisplayType _displayType;
@@ -22,37 +25,35 @@ class CurrencyDisplayWidget extends StatelessWidget {
     }
   }
 
-  Widget _currencyLongNameWidget() => InkWell(
+  Widget _currencyLongNameWidget(String text) => InkWell(
       onTap: () {},
       child: Text(
-        'long name',
+        text,
         textAlign: TextAlign.center,
         style: TextStyle(
             color: _textColor, fontSize: 22.0, fontFamily: _fontFamily),
       ));
 
-  Widget _currencyValueWidget() => Center(
+  Widget _currencyValueWidget(String text) => Center(
         child: InkWell(
             onTap: () {},
             child: Text(
-              'value',
+              text,
               textAlign: TextAlign.center,
               style: TextStyle(
                   color: _textColor, fontSize: 120.0, fontFamily: _fontFamily),
             )),
       );
 
-  Widget _currencyShortNameWidget() {
-    return Text(
-      'short name',
-      textAlign: TextAlign.center,
-      style: TextStyle(
-          color: _textColor,
-          fontSize: 17.0,
-          fontFamily: _fontFamily,
-          fontWeight: FontWeight.bold),
-    );
-  }
+  Widget _currencyShortNameWidget(String text) => Text(
+        text,
+        textAlign: TextAlign.center,
+        style: TextStyle(
+            color: _textColor,
+            fontSize: 17.0,
+            fontFamily: _fontFamily,
+            fontWeight: FontWeight.bold),
+      );
 
   EdgeInsets _edgeInsets(InsetType insetType, double insetValue) {
     switch (insetType) {
@@ -67,18 +68,18 @@ class CurrencyDisplayWidget extends StatelessWidget {
     }
   }
 
-  List<Widget> _columnWidgets(BuildContext context) {
+  List<Widget> _columnWidgets(BuildContext context, CurrencyDisplayState state) {
     final orientation = MediaQuery.of(context).orientation;
     if (orientation == Orientation.portrait) {
       if (_displayType == CurrencyDisplayType.RED) {
         return [
           Padding(
-            child: _currencyLongNameWidget(),
+            child: _currencyLongNameWidget(state.currency.longName),
             padding: _edgeInsets(InsetType.TOP, _differentSideEdgeInsetValue),
           ),
-          _currencyValueWidget(),
+          _currencyValueWidget(state.displayValue),
           Padding(
-            child: _currencyShortNameWidget(),
+            child: _currencyShortNameWidget(state.currency.shortName),
             padding:
                 _edgeInsets(InsetType.BOTTOM, _arrowButtonSideEdgeInsetValue),
           )
@@ -86,12 +87,12 @@ class CurrencyDisplayWidget extends StatelessWidget {
       } else {
         return [
           Padding(
-            child: _currencyShortNameWidget(),
+            child: _currencyShortNameWidget(state.currency.shortName),
             padding: _edgeInsets(InsetType.TOP, _arrowButtonSideEdgeInsetValue),
           ),
-          _currencyValueWidget(),
+          _currencyValueWidget(state.displayValue),
           Padding(
-            child: _currencyLongNameWidget(),
+            child: _currencyLongNameWidget(state.currency.longName),
             padding:
                 _edgeInsets(InsetType.BOTTOM, _differentSideEdgeInsetValue),
           )
@@ -101,16 +102,16 @@ class CurrencyDisplayWidget extends StatelessWidget {
       if (_displayType == CurrencyDisplayType.RED) {
         return [
           Padding(
-            child: _currencyLongNameWidget(),
+            child: _currencyLongNameWidget(state.currency.longName),
             padding: _edgeInsets(InsetType.TOP, _differentSideEdgeInsetValue),
           ),
           Padding(
-            child: _currencyValueWidget(),
+            child: _currencyValueWidget(state.displayValue),
             padding:
                 _edgeInsets(InsetType.RIGHT, _arrowButtonSideEdgeInsetValue),
           ),
           Padding(
-            child: _currencyShortNameWidget(),
+            child: _currencyShortNameWidget(state.currency.shortName),
             padding:
                 _edgeInsets(InsetType.BOTTOM, _differentSideEdgeInsetValue),
           )
@@ -118,16 +119,16 @@ class CurrencyDisplayWidget extends StatelessWidget {
       } else {
         return [
           Padding(
-            child: _currencyLongNameWidget(),
+            child: _currencyLongNameWidget(state.currency.longName),
             padding: _edgeInsets(InsetType.TOP, _differentSideEdgeInsetValue),
           ),
           Padding(
-            child: _currencyValueWidget(),
+            child: _currencyValueWidget(state.displayValue),
             padding:
                 _edgeInsets(InsetType.LEFT, _arrowButtonSideEdgeInsetValue),
           ),
           Padding(
-            child: _currencyShortNameWidget(),
+            child: _currencyShortNameWidget(state.currency.shortName),
             padding:
                 _edgeInsets(InsetType.BOTTOM, _differentSideEdgeInsetValue),
           )
@@ -137,10 +138,15 @@ class CurrencyDisplayWidget extends StatelessWidget {
   }
 
   Widget _mainColumn(BuildContext context) {
-    return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: _columnWidgets(context));
+    final bloc = BlocProvider.of<CurrencyDisplayBloc>(context);
+    return BlocBuilder(
+        bloc: bloc,
+        builder: (context, CurrencyDisplayState state) {
+          return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: _columnWidgets(context, state));
+        });
   }
 
   CurrencyDisplayWidget(this._displayType);

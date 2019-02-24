@@ -10,12 +10,14 @@ class ConverterState {
 
   ConverterState._();
 
-  factory ConverterState.initial() => ConverterState._()
-    ..redCurrency = defaultInputCurrency
-    ..redAmount = defaultAmountValue
-    ..whiteCurrency = defaultOutputCurrency
-    ..whiteAmount = defaultAmountValue
-    ..arrowDirection = ArrowDirection.DOWN;
+  factory ConverterState.initial() {
+    return ConverterState._()
+      ..redCurrency = defaultInputCurrency
+      ..redAmount = defaultAmountValue
+      ..whiteCurrency = defaultOutputCurrency
+      ..whiteAmount = defaultAmountValue
+      ..arrowDirection = ArrowDirection.DOWN;
+  }
 }
 
 enum ArrowDirection {
