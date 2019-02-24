@@ -13,12 +13,14 @@ class ConverterBloc extends Bloc<ConverterEvent, ConverterState> {
       PublishSubject();
 
   Stream<CurrencyDisplayEvent> get redCurrencyDisplayEvents =>
-      _redCurrencyDisplaySubject.stream;
+      _redCurrencyDisplaySubject.stream.distinct();
+
   Stream<CurrencyDisplayEvent> get whiteCurrencyDisplayEvents =>
-      _whiteCurrencyDisplaySubject.stream;
+      _whiteCurrencyDisplaySubject.stream.distinct();
 
   CurrencyDisplayState get initialRedDisplayState => CurrencyDisplayState(
       initialState.redCurrency, initialState.redAmount.toString());
+
   CurrencyDisplayState get initialWhiteDisplayState => CurrencyDisplayState(
       initialState.whiteCurrency, initialState.whiteAmount.toString());
 
@@ -66,11 +68,19 @@ class ConverterBloc extends Bloc<ConverterEvent, ConverterState> {
       _whiteCurrencyDisplaySubject
           .add(UpdateDisplayedCurrency(currentState.redCurrency));
 
+      final whiteAmount = currentState.redAmount;
+      final whiteCurrency = currentState.redCurrency;
+      final redAmount = currentState.whiteAmount;
+      final redCurrency = currentState.whiteCurrency;
+
       yield currentState
-        ..whiteCurrency = currentState.redCurrency
-        ..redCurrency = currentState.whiteCurrency
-        ..redAmount = currentState.whiteAmount
-        ..whiteAmount = currentState.redAmount;
+        ..whiteCurrency = whiteCurrency
+        ..redCurrency = redCurrency
+        ..redAmount = redAmount
+        ..whiteAmount = whiteAmount
+        ..arrowDirection = currentState.arrowDirection == ArrowDirection.UP
+            ? ArrowDirection.DOWN
+            : ArrowDirection.UP;
     }
   }
 

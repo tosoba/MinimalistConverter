@@ -68,7 +68,8 @@ class CurrencyDisplayWidget extends StatelessWidget {
     }
   }
 
-  List<Widget> _columnWidgets(BuildContext context, CurrencyDisplayState state) {
+  List<Widget> _columnWidgets(
+      BuildContext context, CurrencyDisplayState state) {
     final orientation = MediaQuery.of(context).orientation;
     if (orientation == Orientation.portrait) {
       if (_displayType == CurrencyDisplayType.RED) {
@@ -138,7 +139,8 @@ class CurrencyDisplayWidget extends StatelessWidget {
   }
 
   Widget _mainColumn(BuildContext context) {
-    final bloc = BlocProvider.of<CurrencyDisplayBloc>(context);
+    final CurrencyDisplayBloc bloc =
+        BlocProvider.of<CurrencyDisplayBloc>(context);
     return BlocBuilder(
         bloc: bloc,
         builder: (context, CurrencyDisplayState state) {
