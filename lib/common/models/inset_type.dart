@@ -1,3 +1,1 @@
-enum InsetType {
-  TOP, BOTTOM, LEFT, RIGHT
-}
+enum InsetType { TOP, BOTTOM, LEFT, RIGHT }

@@ -7,34 +7,29 @@ import 'package:minimalist_converter/widgets/currency_display/currency_display_s
 void initDependencyContainer() {
   dependencies.Container()
     ..registerInstance(ConverterBloc(), name: "converter_bloc")
-    ..registerFactory(
+    ..registerSingleton(
         (container) => container
             .resolve<ConverterBloc>("converter_bloc")
             .initialRedDisplayState,
-        name: "initial_red_display_state")
-    ..registerFactory(
+        name: "initial_red_display_state")..registerSingleton(
         (container) => container
             .resolve<ConverterBloc>("converter_bloc")
             .initialWhiteDisplayState,
-        name: "initial_white_display_state")
-    ..registerFactory(
+        name: "initial_white_display_state")..registerSingleton(
         (container) => container
             .resolve<ConverterBloc>("converter_bloc")
             .redCurrencyDisplayEvents,
-        name: "red_display_events")
-    ..registerFactory(
+        name: "red_display_events")..registerSingleton(
         (container) => container
             .resolve<ConverterBloc>("converter_bloc")
             .whiteCurrencyDisplayEvents,
-        name: "white_display_events")
-    ..registerFactory(
+        name: "white_display_events")..registerSingleton(
         (container) => CurrencyDisplayBloc(
             container
                 .resolve<CurrencyDisplayState>("initial_red_display_state"),
             container
                 .resolve<Stream<CurrencyDisplayEvent>>("red_display_events")),
-        name: "red_currency_display_bloc")
-    ..registerFactory(
+        name: "red_currency_display_bloc")..registerSingleton(
         (container) => CurrencyDisplayBloc(
             container
                 .resolve<CurrencyDisplayState>("initial_white_display_state"),

@@ -9,38 +9,42 @@ import 'package:minimalist_converter/widgets/currency_display/currency_display_b
 import 'package:minimalist_converter/widgets/currency_display/currency_display_widget.dart';
 
 class ConverterPage extends StatelessWidget {
-  final List<Widget> _currencyDisplays = [
-    Expanded(
-      flex: 1,
-      child: BlocProvider(
-          child: CurrencyDisplayWidget(CurrencyDisplayType.RED),
-          bloc: dependencies.Container()
-              .resolve<CurrencyDisplayBloc>("red_currency_display_bloc")),
-    ),
-    Expanded(
-        flex: 1,
-        child: BlocProvider(
-            child: CurrencyDisplayWidget(CurrencyDisplayType.WHITE),
-            bloc: dependencies.Container()
-                .resolve<CurrencyDisplayBloc>("white_currency_display_bloc"))),
-  ];
+  final CurrencyDisplayBloc _redDisplayBloc = dependencies.Container()
+      .resolve<CurrencyDisplayBloc>("red_currency_display_bloc");
+  final CurrencyDisplayBloc _whiteDisplayBloc = dependencies.Container()
+      .resolve<CurrencyDisplayBloc>("white_currency_display_bloc");
 
-  Widget _mainDisplay(BuildContext context) => OrientationBuilder(
-        builder: (context, orientation) {
-          switch (orientation) {
-            case Orientation.portrait:
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: _currencyDisplays,
-              );
-            case Orientation.landscape:
-              return Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: _currencyDisplays,
-              );
-          }
-        },
-      );
+  List<Widget> get _currencyDisplays =>
+      [
+        Expanded(
+          flex: 1,
+          child: BlocProvider(
+              child: CurrencyDisplayWidget(CurrencyDisplayType.RED),
+              bloc: _redDisplayBloc),
+        ),
+        Expanded(
+            flex: 1,
+            child: BlocProvider(
+                child: CurrencyDisplayWidget(CurrencyDisplayType.WHITE),
+                bloc: _whiteDisplayBloc)),
+      ];
+
+  Widget _mainDisplay(BuildContext context) {
+    switch (MediaQuery
+        .of(context)
+        .orientation) {
+      case Orientation.portrait:
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: _currencyDisplays,
+        );
+      case Orientation.landscape:
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: _currencyDisplays,
+        );
+    }
+  }
 
   Widget _arrowButton(BuildContext context) {
     final converterBloc = BlocProvider.of<ConverterBloc>(context);
@@ -58,7 +62,9 @@ class ConverterPage extends StatelessWidget {
             child: BlocBuilder(
               bloc: converterBloc,
               builder: (context, ConverterState state) => GestureDetector(
-                    onTap: () => converterBloc.dispatch(SwapRedAndWhite()),
+                onTap: () =>
+                    BlocProvider.of<ConverterBloc>(context)
+                        .dispatch(SwapRedAndWhite()),
                     child: Center(
                         child: Icon(
                       state.arrowDirection == ArrowDirection.UP
