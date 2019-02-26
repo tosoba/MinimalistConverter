@@ -139,10 +139,8 @@ class CurrencyDisplayWidget extends StatelessWidget {
   }
 
   Widget _mainColumn(BuildContext context) {
-    final CurrencyDisplayBloc bloc =
-        BlocProvider.of<CurrencyDisplayBloc>(context);
     return BlocBuilder(
-        bloc: bloc,
+        bloc: BlocProvider.of<CurrencyDisplayBloc>(context),
         builder: (context, CurrencyDisplayState state) {
           return Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,

@@ -8,9 +8,15 @@ import 'package:minimalist_converter/pages/converter/converter_state.dart';
 import 'package:minimalist_converter/widgets/currency_display/currency_display_bloc.dart';
 import 'package:minimalist_converter/widgets/currency_display/currency_display_widget.dart';
 
-class ConverterPage extends StatelessWidget {
+class ConverterPage extends StatefulWidget {
+  @override
+  _ConverterPageState createState() => _ConverterPageState();
+}
+
+class _ConverterPageState extends State<ConverterPage> {
   final CurrencyDisplayBloc _redDisplayBloc = dependencies.Container()
       .resolve<CurrencyDisplayBloc>("red_currency_display_bloc");
+
   final CurrencyDisplayBloc _whiteDisplayBloc = dependencies.Container()
       .resolve<CurrencyDisplayBloc>("white_currency_display_bloc");
 
@@ -61,18 +67,17 @@ class ConverterPage extends StatelessWidget {
                     width: 5.0)),
             child: BlocBuilder(
               bloc: converterBloc,
-              builder: (context, ConverterState state) => GestureDetector(
-                onTap: () =>
-                    BlocProvider.of<ConverterBloc>(context)
-                        .dispatch(SwapRedAndWhite()),
+              builder: (context, ConverterState state) =>
+                  GestureDetector(
+                    onTap: () => converterBloc.dispatch(SwapRedAndWhite()),
                     child: Center(
                         child: Icon(
-                      state.arrowDirection == ArrowDirection.UP
-                          ? Icons.arrow_upward
-                          : Icons.arrow_downward,
-                      size: 60.0,
-                      color: Color(0xFFEC5759),
-                    )),
+                          state.arrowDirection == ArrowDirection.UP
+                              ? Icons.arrow_upward
+                              : Icons.arrow_downward,
+                          size: 60.0,
+                          color: Color(0xFFEC5759),
+                        )),
                   ),
             )));
   }
@@ -86,5 +91,12 @@ class ConverterPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _redDisplayBloc.dispose();
+    _whiteDisplayBloc.dispose();
+    super.dispose();
   }
 }

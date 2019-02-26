@@ -58,29 +58,18 @@ class ConverterBloc extends Bloc<ConverterEvent, ConverterState> {
           break;
       }
     } else if (event is SwapRedAndWhite) {
-      //TODO: see if this works...
-      _redCurrencyDisplaySubject
-          .add(UpdateCurrencyAmount(currentState.whiteAmount.toString()));
-      _whiteCurrencyDisplaySubject
-          .add(UpdateCurrencyAmount(currentState.redAmount.toString()));
-      _redCurrencyDisplaySubject
-          .add(UpdateDisplayedCurrency(currentState.whiteCurrency));
-      _whiteCurrencyDisplaySubject
-          .add(UpdateDisplayedCurrency(currentState.redCurrency));
+      final revertedState = ConverterState.reverted(currentState);
 
-      final whiteAmount = currentState.redAmount;
-      final whiteCurrency = currentState.redCurrency;
-      final redAmount = currentState.whiteAmount;
-      final redCurrency = currentState.whiteCurrency;
+      _redCurrencyDisplaySubject
+          .add(UpdateCurrencyAmount(revertedState.redAmount.toString()));
+      _whiteCurrencyDisplaySubject
+          .add(UpdateCurrencyAmount(revertedState.whiteAmount.toString()));
+      _redCurrencyDisplaySubject
+          .add(UpdateDisplayedCurrency(revertedState.redCurrency));
+      _whiteCurrencyDisplaySubject
+          .add(UpdateDisplayedCurrency(revertedState.whiteCurrency));
 
-      yield currentState
-        ..whiteCurrency = whiteCurrency
-        ..redCurrency = redCurrency
-        ..redAmount = redAmount
-        ..whiteAmount = whiteAmount
-        ..arrowDirection = currentState.arrowDirection == ArrowDirection.UP
-            ? ArrowDirection.DOWN
-            : ArrowDirection.UP;
+      yield revertedState;
     }
   }
 

@@ -18,6 +18,17 @@ class ConverterState {
       ..whiteAmount = defaultAmountValue
       ..arrowDirection = ArrowDirection.DOWN;
   }
+
+  factory ConverterState.reverted(ConverterState other) {
+    return ConverterState._()
+      ..redCurrency = other.whiteCurrency
+      ..redAmount = other.whiteAmount
+      ..whiteCurrency = other.redCurrency
+      ..whiteAmount = other.redAmount
+      ..arrowDirection = other.arrowDirection == ArrowDirection.UP
+          ? ArrowDirection.DOWN
+          : ArrowDirection.UP;
+  }
 }
 
 enum ArrowDirection {

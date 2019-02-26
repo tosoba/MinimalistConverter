@@ -21,9 +21,9 @@ class CurrencyDisplayBloc
   Stream<CurrencyDisplayState> mapEventToState(
       CurrencyDisplayState currentState, CurrencyDisplayEvent event) async* {
     if (event is UpdateCurrencyAmount) {
-      yield currentState..displayValue = event.newDisplayValue;
+      yield CurrencyDisplayState(currentState.currency, event.newDisplayValue);
     } else if (event is UpdateDisplayedCurrency) {
-      yield currentState..currency = event.newCurrency;
+      yield CurrencyDisplayState(event.newCurrency, currentState.displayValue);
     }
   }
 }
