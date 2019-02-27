@@ -12,7 +12,7 @@ class CurrencyDisplayWidget extends StatelessWidget {
   final String _fontFamily = 'Quicksand';
 
   final double _arrowButtonSideEdgeInsetValue = arrowButtonDimension / 2 + 15.0;
-  final double _differentSideEdgeInsetValue = arrowButtonDimension / 2 - 10.0;
+  final double _differentSideEdgeInsetValue = arrowButtonDimension / 2 - 20.0;
 
   Color get _backgroundColor => colors[_displayType];
 
@@ -34,16 +34,22 @@ class CurrencyDisplayWidget extends StatelessWidget {
             color: _textColor, fontSize: 22.0, fontFamily: _fontFamily),
       ));
 
-  Widget _currencyValueWidget(String text) => Center(
-        child: InkWell(
-            onTap: () {},
-            child: Text(
-              text,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  color: _textColor, fontSize: 120.0, fontFamily: _fontFamily),
-            )),
-      );
+  Widget _currencyValueWidget(String text, BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
+    final fontSize = MediaQuery.of(context).orientation == Orientation.portrait
+        ? height / 8
+        : height / 4;
+    return Center(
+      child: InkWell(
+          onTap: () {},
+          child: Text(
+            text,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                color: _textColor, fontSize: fontSize, fontFamily: _fontFamily),
+          )),
+    );
+  }
 
   Widget _currencyShortNameWidget(String text) => Text(
         text,
@@ -78,7 +84,7 @@ class CurrencyDisplayWidget extends StatelessWidget {
             child: _currencyLongNameWidget(state.currency.longName),
             padding: _edgeInsets(InsetType.TOP, _differentSideEdgeInsetValue),
           ),
-          _currencyValueWidget(state.displayValue),
+          _currencyValueWidget(state.displayValue, context),
           Padding(
             child: _currencyShortNameWidget(state.currency.shortName),
             padding:
@@ -91,7 +97,7 @@ class CurrencyDisplayWidget extends StatelessWidget {
             child: _currencyShortNameWidget(state.currency.shortName),
             padding: _edgeInsets(InsetType.TOP, _arrowButtonSideEdgeInsetValue),
           ),
-          _currencyValueWidget(state.displayValue),
+          _currencyValueWidget(state.displayValue, context),
           Padding(
             child: _currencyLongNameWidget(state.currency.longName),
             padding:
@@ -107,7 +113,7 @@ class CurrencyDisplayWidget extends StatelessWidget {
             padding: _edgeInsets(InsetType.TOP, _differentSideEdgeInsetValue),
           ),
           Padding(
-            child: _currencyValueWidget(state.displayValue),
+            child: _currencyValueWidget(state.displayValue, context),
             padding:
                 _edgeInsets(InsetType.RIGHT, _arrowButtonSideEdgeInsetValue),
           ),
@@ -124,7 +130,7 @@ class CurrencyDisplayWidget extends StatelessWidget {
             padding: _edgeInsets(InsetType.TOP, _differentSideEdgeInsetValue),
           ),
           Padding(
-            child: _currencyValueWidget(state.displayValue),
+            child: _currencyValueWidget(state.displayValue, context),
             padding:
                 _edgeInsets(InsetType.LEFT, _arrowButtonSideEdgeInsetValue),
           ),
