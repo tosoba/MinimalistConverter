@@ -2,36 +2,61 @@ import 'package:minimalist_converter/common/models/currency.dart';
 import 'package:minimalist_converter/common/values/default_values.dart';
 
 class ConverterState {
-  Currency redCurrency;
-  double redAmount;
-  Currency whiteCurrency;
-  double whiteAmount;
-  ArrowDirection arrowDirection;
+  Currency _redCurrency;
+  double _redAmount;
+  Currency _whiteCurrency;
+  double _whiteAmount;
+  ArrowDirection _arrowDirection;
+
+  Currency get redCurrency => _redCurrency;
+  double get redAmount => _redAmount;
+  Currency get whiteCurrency => _whiteCurrency;
+  double get whiteAmount => _whiteAmount;
+  ArrowDirection get arrowDirection => _arrowDirection;
 
   ConverterState._();
 
   factory ConverterState.initial() {
     return ConverterState._()
-      ..redCurrency = defaultInputCurrency
-      ..redAmount = defaultAmountValue
-      ..whiteCurrency = defaultOutputCurrency
-      ..whiteAmount = defaultAmountValue
-      ..arrowDirection = ArrowDirection.DOWN;
+      .._redCurrency = defaultInputCurrency
+      .._redAmount = defaultAmountValue
+      .._whiteCurrency = defaultOutputCurrency
+      .._whiteAmount = defaultAmountValue
+      .._arrowDirection = ArrowDirection.TOWARDS_WHITE;
   }
 
   factory ConverterState.reverted(ConverterState other) {
     return ConverterState._()
-      ..redCurrency = other.whiteCurrency
-      ..redAmount = other.whiteAmount
-      ..whiteCurrency = other.redCurrency
-      ..whiteAmount = other.redAmount
-      ..arrowDirection = other.arrowDirection == ArrowDirection.UP
-          ? ArrowDirection.DOWN
-          : ArrowDirection.UP;
+      .._redCurrency = other._whiteCurrency
+      .._redAmount = other._whiteAmount
+      .._whiteCurrency = other._redCurrency
+      .._whiteAmount = other._redAmount
+      .._arrowDirection = other._arrowDirection == ArrowDirection.TOWARDS_RED
+          ? ArrowDirection.TOWARDS_WHITE
+          : ArrowDirection.TOWARDS_RED;
+  }
+
+  ConverterState copyWith(
+      {Currency redCurrency,
+      double redAmount,
+      Currency whiteCurrency,
+      double whiteAmount,
+      ArrowDirection arrowDirection}) {
+    redCurrency ??= this.redCurrency;
+    redAmount ??= this.redAmount;
+    whiteCurrency ??= this.whiteCurrency;
+    whiteAmount ??= this.whiteAmount;
+    arrowDirection ??= this.arrowDirection;
+    return ConverterState._()
+      .._redCurrency = redCurrency
+      .._redAmount = redAmount
+      .._whiteCurrency = whiteCurrency
+      .._whiteAmount = whiteAmount
+      .._arrowDirection = arrowDirection;
   }
 }
 
 enum ArrowDirection {
-  UP, // means that upper display acts as output for converstion result and bottom as input for conversion
-  DOWN // means the same as above the other way around
+  TOWARDS_RED, // means that red display acts as output for converstion result and white as input for conversion
+  TOWARDS_WHITE // means the same as above the other way around
 }

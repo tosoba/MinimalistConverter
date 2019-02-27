@@ -1,8 +1,8 @@
 import 'package:minimalist_converter/common/models/currency.dart';
 
 class CurrencyDisplayState {
-  Currency currency;
-  String displayValue;
+  final Currency currency;
+  final String displayValue;
 
   CurrencyDisplayState(this.currency, this.displayValue);
 }

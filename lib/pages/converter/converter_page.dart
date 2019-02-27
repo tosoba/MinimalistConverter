@@ -57,13 +57,20 @@ class _ConverterPageState extends State<ConverterPage> {
       onPressed: () => converterBloc.dispatch(SwapRedAndWhite()),
       child: BlocBuilder(
         bloc: converterBloc,
-        builder: (context, ConverterState state) => Icon(
-              state.arrowDirection == ArrowDirection.UP
-                  ? Icons.arrow_upward
-                  : Icons.arrow_downward,
-              color: colors["red"],
-              size: 65,
-            ),
+        builder: (context, ConverterState state) {
+          final orientation = MediaQuery.of(context).orientation;
+          return Icon(
+            state.arrowDirection == ArrowDirection.TOWARDS_RED
+                ? (orientation == Orientation.portrait)
+                    ? Icons.arrow_upward
+                    : Icons.arrow_back
+                : (orientation == Orientation.portrait)
+                    ? Icons.arrow_downward
+                    : Icons.arrow_forward,
+            color: colors["red"],
+            size: 65,
+          );
+        },
       ),
       shape: CircleBorder(side: BorderSide(width: 2.0, color: colors["red"])),
       elevation: 1.0,

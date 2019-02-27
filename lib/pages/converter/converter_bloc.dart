@@ -26,7 +26,7 @@ class ConverterBloc extends Bloc<ConverterEvent, ConverterState> {
 
   @override
   ConverterState get initialState => ConverterState.initial();
-  
+
   @override
   Stream<ConverterState> mapEventToState(
       ConverterState currentState, ConverterEvent event) async* {
@@ -35,12 +35,12 @@ class ConverterBloc extends Bloc<ConverterEvent, ConverterState> {
         case CurrencyDisplayType.RED:
           _redCurrencyDisplaySubject
               .add(UpdateCurrencyAmount(event.amount.toString()));
-          yield currentState..redAmount = event.amount;
+          yield currentState.copyWith(redAmount: event.amount);
           break;
         case CurrencyDisplayType.WHITE:
           _whiteCurrencyDisplaySubject
               .add(UpdateCurrencyAmount(event.amount.toString()));
-          yield currentState..whiteAmount = event.amount;
+          yield currentState.copyWith(whiteAmount: event.amount);
           break;
       }
     } else if (event is UpdateCurrency) {
@@ -48,12 +48,12 @@ class ConverterBloc extends Bloc<ConverterEvent, ConverterState> {
         case CurrencyDisplayType.RED:
           _redCurrencyDisplaySubject
               .add(UpdateDisplayedCurrency(event.currency));
-          yield currentState..redCurrency = event.currency;
+          yield currentState.copyWith(redCurrency: event.currency);
           break;
         case CurrencyDisplayType.WHITE:
           _whiteCurrencyDisplaySubject
               .add(UpdateDisplayedCurrency(event.currency));
-          yield currentState..whiteCurrency = event.currency;
+          yield currentState.copyWith(whiteCurrency: event.currency);
           break;
       }
     } else if (event is SwapRedAndWhite) {
