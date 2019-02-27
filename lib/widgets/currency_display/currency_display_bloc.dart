@@ -8,7 +8,6 @@ class CurrencyDisplayBloc
   final Stream<CurrencyDisplayEvent> _eventsFromConverter;
 
   CurrencyDisplayBloc(this._initialState, this._eventsFromConverter) {
-    //TODO: dispose?
     _eventsFromConverter.listen((event) {
       dispatch(event);
     });

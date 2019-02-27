@@ -14,14 +14,15 @@ class CurrencyDisplayWidget extends StatelessWidget {
   final double _arrowButtonSideEdgeInsetValue = arrowButtonDimension / 2 + 15.0;
   final double _differentSideEdgeInsetValue = arrowButtonDimension / 2 - 20.0;
 
-  Color get _backgroundColor => colors[_displayType];
+  Color get _backgroundColor =>
+      colors[_displayType == CurrencyDisplayType.RED ? "red" : "white"];
 
   Color get _textColor {
     switch (_displayType) {
       case CurrencyDisplayType.RED:
-        return colors[CurrencyDisplayType.WHITE];
+        return colors["white"];
       case CurrencyDisplayType.WHITE:
-        return colors[CurrencyDisplayType.RED];
+        return colors["red"];
     }
   }
 

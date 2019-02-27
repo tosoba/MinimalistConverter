@@ -26,8 +26,7 @@ class ConverterBloc extends Bloc<ConverterEvent, ConverterState> {
 
   @override
   ConverterState get initialState => ConverterState.initial();
-
-  //TODO: extract side effects (passing events to currency display subjects to a mapper function passed via constructor - later maybe dependency injected)
+  
   @override
   Stream<ConverterState> mapEventToState(
       ConverterState currentState, ConverterEvent event) async* {
@@ -75,7 +74,6 @@ class ConverterBloc extends Bloc<ConverterEvent, ConverterState> {
 
   @override
   void dispose() {
-    //TODO: check if this is necessary...
     _redCurrencyDisplaySubject.close();
     _whiteCurrencyDisplaySubject.close();
     super.dispose();
