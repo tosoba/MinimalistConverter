@@ -13,6 +13,8 @@ class InputBloc extends Bloc<InputEvent, InputState> {
       yield InputState.withNewCharacter(currentState, event.character);
     } else if (event is RemoveLastCharacter) {
       yield InputState.withLastCharacterRemoved(currentState);
+    } else if (event is Clear) {
+      yield InputState.initial();
     }
   }
 }

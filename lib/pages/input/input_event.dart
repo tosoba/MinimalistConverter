@@ -7,3 +7,5 @@ class AppendNewCharacter extends InputEvent {
 }
 
 class RemoveLastCharacter extends InputEvent {}
+
+class Clear extends InputEvent {}

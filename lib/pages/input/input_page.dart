@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kiwi/kiwi.dart' as dependencies;
 import 'package:minimalist_converter/common/models/currency_display_type.dart';
 import 'package:minimalist_converter/common/values/colors.dart';
 import 'package:auto_size_text/auto_size_text.dart';
@@ -9,15 +10,21 @@ import 'package:minimalist_converter/pages/input/input_state.dart';
 
 //TODO: fontSizes, fontFamilies, onTaps, texts
 
-class InputPage extends StatelessWidget {
+class InputPage extends StatefulWidget {
   final CurrencyDisplayType _displayType;
 
-  Color get _backgroundColor =>
-      colors[_displayType == CurrencyDisplayType.RED ? "red" : "white"];
-  Color get _accentColor =>
-      colors[_displayType == CurrencyDisplayType.RED ? "white" : "red"];
-
   InputPage(this._displayType);
+
+  @override
+  _InputPageState createState() => _InputPageState();
+}
+
+class _InputPageState extends State<InputPage> {
+  Color get _backgroundColor =>
+      colors[widget._displayType == CurrencyDisplayType.RED ? "red" : "white"];
+
+  Color get _accentColor =>
+      colors[widget._displayType == CurrencyDisplayType.RED ? "white" : "red"];
 
   Widget _tapToDeleteButton(BuildContext context) {
     final orientation = MediaQuery.of(context).orientation;
@@ -257,6 +264,12 @@ class InputPage extends StatelessWidget {
                   )
                 ],
               ));
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    dependencies.Container().resolve<InputBloc>().dispatch(Clear());
   }
 
   @override
