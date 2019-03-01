@@ -50,7 +50,7 @@ class InputPage extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.fromLTRB(15.0, 5.0, 15.0, 5.0),
       child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: buttons
               .map((button) => Expanded(
@@ -90,8 +90,33 @@ class InputPage extends StatelessWidget {
       _inputButtonsRow([
         _InputButton(_accentColor, _inputButtonText(',')),
         _InputButton(_accentColor, _inputButtonText('0')),
-        _InputButton(_accentColor, _inputButtonIcon(Icons.subdirectory_arrow_left)),
+        _InputButton(
+            _accentColor, _inputButtonIcon(Icons.subdirectory_arrow_left)),
       ]),
+    ];
+  }
+
+  List<Widget> get _horizontalButtonRows {
+    return [
+      _inputButtonsRow([
+        _InputButton(_accentColor, _inputButtonText('1')),
+        _InputButton(_accentColor, _inputButtonText('2')),
+        _InputButton(_accentColor, _inputButtonText('3')),
+        _InputButton(_accentColor, _inputButtonText(',')),
+      ]),
+      _inputButtonsRow([
+        _InputButton(_accentColor, _inputButtonText('4')),
+        _InputButton(_accentColor, _inputButtonText('5')),
+        _InputButton(_accentColor, _inputButtonText('6')),
+        _InputButton(_accentColor, _inputButtonText('0')),
+      ]),
+      _inputButtonsRow([
+        _InputButton(_accentColor, _inputButtonText('7')),
+        _InputButton(_accentColor, _inputButtonText('8')),
+        _InputButton(_accentColor, _inputButtonText('9')),
+        _InputButton(
+            _accentColor, _inputButtonIcon(Icons.subdirectory_arrow_left)),
+      ])
     ];
   }
 
@@ -128,6 +153,17 @@ class InputPage extends StatelessWidget {
     return widgets;
   }
 
+  List<Widget> _horizontalLeftColumnWidgets(BuildContext context) {
+    return [
+      Expanded(flex: 1, child: _tapToDeleteButton(context)),
+      Expanded(
+        flex: 4,
+        child: _inputTextField(context),
+      ),
+      Expanded(flex: 1, child: _backButton(context))
+    ];
+  }
+
   Widget _mainWidget(BuildContext context) {
     final orientation = MediaQuery.of(context).orientation;
     final statusBarHeight = MediaQuery.of(context).padding.top;
@@ -139,7 +175,27 @@ class InputPage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: _verticalColumnWidgets(context))
             : Row(
-                children: <Widget>[],
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Expanded(
+                    flex: 3,
+                    child: Column(
+                      children: _horizontalLeftColumnWidgets(context),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 4,
+                    child: Column(
+                      children: _horizontalButtonRows
+                          .map((row) => Expanded(
+                                flex: 3,
+                                child: row,
+                              ))
+                          .toList(),
+                    ),
+                  )
+                ],
               ));
   }
 
@@ -165,12 +221,17 @@ class _InputButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RawMaterialButton(
-      onPressed: () {},
-      shape: CircleBorder(),
-      fillColor: _backgroundColor,
-      elevation: 0.0,
-      child: _child,
+    return Padding(
+      padding: MediaQuery.of(context).orientation == Orientation.landscape
+          ? EdgeInsets.symmetric(vertical: 0.0, horizontal: 5.0)
+          : EdgeInsets.all(0.0),
+      child: RawMaterialButton(
+        onPressed: () {},
+        shape: CircleBorder(),
+        fillColor: _backgroundColor,
+        elevation: 0.0,
+        child: _child,
+      ),
     );
   }
 }
