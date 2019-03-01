@@ -4,6 +4,7 @@ import 'package:minimalist_converter/common/models/currency_display_type.dart';
 import 'package:minimalist_converter/common/models/inset_type.dart';
 import 'package:minimalist_converter/common/values/colors.dart';
 import 'package:minimalist_converter/common/values/dimensions.dart';
+import 'package:minimalist_converter/pages/input/input_page.dart';
 import 'package:minimalist_converter/widgets/currency_display/currency_display_bloc.dart';
 import 'package:minimalist_converter/widgets/currency_display/currency_display_state.dart';
 
@@ -42,7 +43,11 @@ class CurrencyDisplayWidget extends StatelessWidget {
         : height / 4;
     return Center(
       child: InkWell(
-          onTap: () {},
+          onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => InputPage(_displayType)),
+              ),
           child: Text(
             text,
             textAlign: TextAlign.center,
