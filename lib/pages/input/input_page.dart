@@ -110,6 +110,11 @@ class _InputPageState extends State<InputPage> {
         .dispatch(AppendNewCharacter(character));
   }
 
+  Function _onSubmitButtonPressed(BuildContext context) {
+    return () => Navigator.pop(
+        context, BlocProvider.of<InputBloc>(context).currentState.input);
+  }
+
   List<Widget> _verticalButtonRows(BuildContext context) {
     return [
       _inputButtonsRow([
@@ -141,8 +146,10 @@ class _InputPageState extends State<InputPage> {
             _onInputButtonTextPressed(',', context)),
         _InputButton(_accentColor, _inputButtonText('0'),
             _onInputButtonTextPressed('0', context)),
-        _InputButton(_accentColor,
-            _inputButtonIcon(Icons.subdirectory_arrow_left), () {}),
+        _InputButton(
+            _accentColor,
+            _inputButtonIcon(Icons.subdirectory_arrow_left),
+            _onSubmitButtonPressed(context)),
       ]),
     ];
   }
@@ -176,8 +183,10 @@ class _InputPageState extends State<InputPage> {
             _onInputButtonTextPressed('8', context)),
         _InputButton(_accentColor, _inputButtonText('9'),
             _onInputButtonTextPressed('9', context)),
-        _InputButton(_accentColor,
-            _inputButtonIcon(Icons.subdirectory_arrow_left), () {}),
+        _InputButton(
+            _accentColor,
+            _inputButtonIcon(Icons.subdirectory_arrow_left),
+            _onSubmitButtonPressed(context)),
       ])
     ];
   }

@@ -4,14 +4,12 @@ import 'package:minimalist_converter/common/models/currency_display_type.dart';
 import 'package:minimalist_converter/common/models/inset_type.dart';
 import 'package:minimalist_converter/common/values/colors.dart';
 import 'package:minimalist_converter/common/values/dimensions.dart';
-import 'package:minimalist_converter/pages/input/input_bloc.dart';
-import 'package:minimalist_converter/pages/input/input_page.dart';
 import 'package:minimalist_converter/widgets/currency_display/currency_display_bloc.dart';
 import 'package:minimalist_converter/widgets/currency_display/currency_display_state.dart';
-import 'package:kiwi/kiwi.dart' as dependencies;
 
 class CurrencyDisplayWidget extends StatelessWidget {
   final CurrencyDisplayType _displayType;
+  final Function(BuildContext, CurrencyDisplayType) _onValueWidgetPressed;
   final String _fontFamily = 'Quicksand';
 
   final double _arrowButtonSideEdgeInsetValue = arrowButtonDimension / 2 + 15.0;
@@ -45,13 +43,7 @@ class CurrencyDisplayWidget extends StatelessWidget {
         : height / 4;
     return Center(
       child: InkWell(
-          onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => BlocProvider(
-                        child: InputPage(_displayType),
-                        bloc: dependencies.Container().resolve<InputBloc>())),
-              ),
+          onTap: () async => await _onValueWidgetPressed(context, _displayType),
           child: Text(
             text,
             textAlign: TextAlign.center,
@@ -165,7 +157,7 @@ class CurrencyDisplayWidget extends StatelessWidget {
         });
   }
 
-  CurrencyDisplayWidget(this._displayType);
+  CurrencyDisplayWidget(this._displayType, this._onValueWidgetPressed);
 
   @override
   Widget build(BuildContext context) {

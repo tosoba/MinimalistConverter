@@ -6,6 +6,8 @@ import 'package:minimalist_converter/common/values/colors.dart';
 import 'package:minimalist_converter/pages/converter/converter_bloc.dart';
 import 'package:minimalist_converter/pages/converter/converter_event.dart';
 import 'package:minimalist_converter/pages/converter/converter_state.dart';
+import 'package:minimalist_converter/pages/input/input_bloc.dart';
+import 'package:minimalist_converter/pages/input/input_page.dart';
 import 'package:minimalist_converter/widgets/currency_display/currency_display_bloc.dart';
 import 'package:minimalist_converter/widgets/currency_display/currency_display_widget.dart';
 
@@ -25,15 +27,39 @@ class _ConverterPageState extends State<ConverterPage> {
         Expanded(
           flex: 1,
           child: BlocProvider(
-              child: CurrencyDisplayWidget(CurrencyDisplayType.RED),
+              child: CurrencyDisplayWidget(
+                  CurrencyDisplayType.RED, _showInputPageAndHandleResult),
               bloc: _redDisplayBloc),
         ),
         Expanded(
             flex: 1,
             child: BlocProvider(
-                child: CurrencyDisplayWidget(CurrencyDisplayType.WHITE),
+                child: CurrencyDisplayWidget(
+                    CurrencyDisplayType.WHITE, _showInputPageAndHandleResult),
                 bloc: _whiteDisplayBloc)),
       ];
+
+  void _showInputPageAndHandleResult(
+      BuildContext context, CurrencyDisplayType displayType) async {
+    final result = await _showInputPage(context, displayType);
+
+    if (result != null) {
+      double amount = double.tryParse(result) ?? 0.0;
+      BlocProvider.of<ConverterBloc>(context)
+          .dispatch(UpdateAmount(displayType, amount));
+    }
+  }
+
+  Future<String> _showInputPage(
+      BuildContext context, CurrencyDisplayType displayType) async {
+    return await Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => BlocProvider(
+              child: InputPage(displayType),
+              bloc: dependencies.Container().resolve<InputBloc>())),
+    );
+  }
 
   Widget _mainDisplay(BuildContext context) {
     switch (MediaQuery.of(context).orientation) {
