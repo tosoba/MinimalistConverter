@@ -22,6 +22,7 @@ dependencies:
 
   flutter_bloc: ^0.7.0
   kiwi: ^0.1.0
+  auto_size_text: ^1.0.0
 
 dev_dependencies:
   flutter_test:

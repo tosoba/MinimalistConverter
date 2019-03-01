@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:minimalist_converter/common/models/currency_display_type.dart';
 import 'package:minimalist_converter/common/values/colors.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 //TODO: fontSizes, fontFamilies, onTaps, texts
 // auto size text
@@ -16,26 +17,29 @@ class InputPage extends StatelessWidget {
   InputPage(this._displayType);
 
   Widget _tapToDeleteButton(BuildContext context) {
-    return InkWell(
-      onTap: () {},
-      child: Text(
-        'tap to delete',
-        style: TextStyle(
-            color: _accentColor,
-            fontSize: 17.0,
-            fontFamily: 'Quicksand',
-            fontWeight: FontWeight.bold),
+    return Center(
+      child: InkWell(
+        onTap: () {},
+        child: Text(
+          'tap to delete',
+          style: TextStyle(
+              color: _accentColor,
+              fontSize: 17.0,
+              fontFamily: 'Quicksand',
+              fontWeight: FontWeight.bold),
+        ),
       ),
     );
   }
 
   Widget _inputTextField(BuildContext context) {
     return Center(
-      child: Text(
+      child: AutoSizeText(
         'input',
+        maxLines: 1,
         style: TextStyle(
             color: _accentColor,
-            fontSize: 100.0,
+            fontSize: 90.0,
             fontFamily: 'Quicksand',
             fontWeight: FontWeight.bold),
       ),
@@ -43,13 +47,17 @@ class InputPage extends StatelessWidget {
   }
 
   Widget _inputButtonsRow(List<Widget> buttons) {
-    return Row(
-        children: buttons
-            .map((button) => Expanded(
-                  flex: 1,
-                  child: button,
-                ))
-            .toList());
+    return Padding(
+      padding: EdgeInsets.fromLTRB(15.0, 5.0, 15.0, 5.0),
+      child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: buttons
+              .map((button) => Expanded(
+                    child: button,
+                  ))
+              .toList()),
+    );
   }
 
   Widget _backButton(BuildContext context) {
@@ -65,26 +73,59 @@ class InputPage extends StatelessWidget {
   List<Widget> get _verticalButtonRows {
     return [
       _inputButtonsRow([
-        InputButton('1', _accentColor, _backgroundColor),
-        InputButton('2', _accentColor, _backgroundColor),
-        InputButton('3', _accentColor, _backgroundColor),
+        _InputButton(_accentColor, _inputButtonText('1')),
+        _InputButton(_accentColor, _inputButtonText('2')),
+        _InputButton(_accentColor, _inputButtonText('3')),
       ]),
       _inputButtonsRow([
-        InputButton('4', _accentColor, _backgroundColor),
-        InputButton('5', _accentColor, _backgroundColor),
-        InputButton('6', _accentColor, _backgroundColor),
+        _InputButton(_accentColor, _inputButtonText('4')),
+        _InputButton(_accentColor, _inputButtonText('5')),
+        _InputButton(_accentColor, _inputButtonText('6')),
       ]),
       _inputButtonsRow([
-        InputButton('7', _accentColor, _backgroundColor),
-        InputButton('8', _accentColor, _backgroundColor),
-        InputButton('9', _accentColor, _backgroundColor),
+        _InputButton(_accentColor, _inputButtonText('7')),
+        _InputButton(_accentColor, _inputButtonText('8')),
+        _InputButton(_accentColor, _inputButtonText('9')),
       ]),
       _inputButtonsRow([
-        InputButton(',', _accentColor, _backgroundColor),
-        InputButton('0', _accentColor, _backgroundColor),
-        InputButton('OK', _accentColor, _backgroundColor),
+        _InputButton(_accentColor, _inputButtonText(',')),
+        _InputButton(_accentColor, _inputButtonText('0')),
+        _InputButton(_accentColor, _inputButtonIcon(Icons.subdirectory_arrow_left)),
       ]),
     ];
+  }
+
+  Widget _inputButtonText(String text) {
+    return Text(
+      text,
+      style: TextStyle(color: _backgroundColor, fontSize: 30.0),
+    );
+  }
+
+  Widget _inputButtonIcon(IconData iconData) {
+    return Icon(
+      iconData,
+      color: _backgroundColor,
+      size: 30.0,
+    );
+  }
+
+  List<Widget> _verticalColumnWidgets(BuildContext context) {
+    final widgets = [
+      Expanded(flex: 2, child: _tapToDeleteButton(context)),
+      Expanded(
+        flex: 4,
+        child: _inputTextField(context),
+      )
+    ];
+    widgets.addAll(_verticalButtonRows
+        .map((row) => Expanded(
+              flex: 3,
+              child: row,
+            ))
+        .toList());
+    widgets.add(Expanded(flex: 2, child: _backButton(context)));
+    return widgets;
   }
 
   Widget _mainWidget(BuildContext context) {
@@ -94,21 +135,9 @@ class InputPage extends StatelessWidget {
         padding: EdgeInsets.only(top: statusBarHeight),
         child: orientation == Orientation.portrait
             ? Column(
-                children: [
-                  Expanded(flex: 2, child: _tapToDeleteButton(context)),
-                  Expanded(
-                    flex: 4,
-                    child: _inputTextField(context),
-                  )
-                ]
-                  ..addAll(_verticalButtonRows
-                      .map((row) => Expanded(
-                            flex: 3,
-                            child: row,
-                          ))
-                      .toList())
-                  ..add(Expanded(flex: 2, child: _backButton(context))),
-              )
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: _verticalColumnWidgets(context))
             : Row(
                 children: <Widget>[],
               ));
@@ -128,25 +157,20 @@ class InputPage extends StatelessWidget {
 }
 
 //TODO: make it similar to arrow button with ink effect and stuff...
-class InputButton extends StatelessWidget {
-  final String _text;
+class _InputButton extends StatelessWidget {
   final Color _backgroundColor;
-  final Color _textColor;
+  final Widget _child;
 
-  InputButton(this._text, this._backgroundColor, this._textColor);
+  _InputButton(this._backgroundColor, this._child);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(40.0), color: _backgroundColor),
-      child: Center(
-        child: Text(
-          _text,
-          style: TextStyle(
-              color: _textColor, fontSize: 22.0, fontWeight: FontWeight.bold),
-        ),
-      ),
+    return RawMaterialButton(
+      onPressed: () {},
+      shape: CircleBorder(),
+      fillColor: _backgroundColor,
+      elevation: 0.0,
+      child: _child,
     );
   }
 }
