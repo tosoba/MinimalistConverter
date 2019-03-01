@@ -17,7 +17,11 @@ class InputPage extends StatelessWidget {
   InputPage(this._displayType);
 
   Widget _tapToDeleteButton(BuildContext context) {
-    return Center(
+    final orientation = MediaQuery.of(context).orientation;
+    final align = Align(
+      alignment: orientation == Orientation.portrait
+          ? AlignmentDirectional.center
+          : AlignmentDirectional.topCenter,
       child: InkWell(
         onTap: () {},
         child: Text(
@@ -30,6 +34,12 @@ class InputPage extends StatelessWidget {
         ),
       ),
     );
+    return orientation == Orientation.portrait
+        ? align
+        : Padding(
+            child: align,
+            padding: EdgeInsets.symmetric(vertical: 15.0),
+          );
   }
 
   Widget _inputTextField(BuildContext context) {
@@ -61,11 +71,22 @@ class InputPage extends StatelessWidget {
   }
 
   Widget _backButton(BuildContext context) {
-    return InkWell(
-      onTap: () => Navigator.pop(context),
-      child: Icon(
-        Icons.keyboard_arrow_down,
-        color: _accentColor,
+    final orientation = MediaQuery.of(context).orientation;
+    return Padding(
+      padding: orientation == Orientation.portrait
+          ? EdgeInsets.symmetric(horizontal: 10.0)
+          : EdgeInsets.symmetric(horizontal: 10.0, vertical: 15.0),
+      child: Align(
+        alignment: orientation == Orientation.portrait
+            ? AlignmentDirectional.centerStart
+            : AlignmentDirectional.topStart,
+        child: InkWell(
+          onTap: () => Navigator.pop(context),
+          child: Icon(
+            Icons.arrow_back,
+            color: _accentColor,
+          ),
+        ),
       ),
     );
   }
@@ -137,7 +158,7 @@ class InputPage extends StatelessWidget {
 
   List<Widget> _verticalColumnWidgets(BuildContext context) {
     final widgets = [
-      Expanded(flex: 2, child: _tapToDeleteButton(context)),
+      Expanded(flex: 2, child: _backAndBackspaceButtonsRow(context)),
       Expanded(
         flex: 4,
         child: _inputTextField(context),
@@ -149,18 +170,23 @@ class InputPage extends StatelessWidget {
               child: row,
             ))
         .toList());
-    widgets.add(Expanded(flex: 2, child: _backButton(context)));
+    widgets.add(Expanded(
+      flex: 1,
+      child: SizedBox(),
+    ));
     return widgets;
+  }
+
+  Widget _backAndBackspaceButtonsRow(BuildContext context) {
+    return Stack(
+      children: <Widget>[_backButton(context), _tapToDeleteButton(context)],
+    );
   }
 
   List<Widget> _horizontalLeftColumnWidgets(BuildContext context) {
     return [
-      Expanded(flex: 1, child: _tapToDeleteButton(context)),
-      Expanded(
-        flex: 4,
-        child: _inputTextField(context),
-      ),
-      Expanded(flex: 1, child: _backButton(context))
+      _backAndBackspaceButtonsRow(context),
+      Center(child: _inputTextField(context)),
     ];
   }
 
@@ -180,7 +206,7 @@ class InputPage extends StatelessWidget {
                 children: <Widget>[
                   Expanded(
                     flex: 3,
-                    child: Column(
+                    child: Stack(
                       children: _horizontalLeftColumnWidgets(context),
                     ),
                   ),
