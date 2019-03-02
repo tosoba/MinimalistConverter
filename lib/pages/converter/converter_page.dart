@@ -93,12 +93,12 @@ class _ConverterPageState extends State<ConverterPage> {
                 : (orientation == Orientation.portrait)
                     ? Icons.arrow_downward
                     : Icons.arrow_forward,
-            color: colors["red"],
+            color: AppColors.red,
             size: 65,
           );
         },
       ),
-      shape: CircleBorder(side: BorderSide(width: 2.0, color: colors["red"])),
+      shape: CircleBorder(side: BorderSide(width: 2.0, color: AppColors.red)),
       elevation: 1.0,
       fillColor: Colors.white,
       padding: EdgeInsets.all(25.0),

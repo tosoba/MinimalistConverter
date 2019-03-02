@@ -4,28 +4,21 @@ import 'package:minimalist_converter/common/models/currency_display_type.dart';
 import 'package:minimalist_converter/common/models/inset_type.dart';
 import 'package:minimalist_converter/common/values/colors.dart';
 import 'package:minimalist_converter/common/values/dimensions.dart';
+import 'package:minimalist_converter/common/values/fonts.dart';
 import 'package:minimalist_converter/widgets/currency_display/currency_display_bloc.dart';
 import 'package:minimalist_converter/widgets/currency_display/currency_display_state.dart';
 
 class CurrencyDisplayWidget extends StatelessWidget {
   final CurrencyDisplayType _displayType;
   final Function(BuildContext, CurrencyDisplayType) _onValueWidgetPressed;
-  final String _fontFamily = 'Quicksand';
 
   final double _arrowButtonSideEdgeInsetValue = arrowButtonDimension / 2 + 15.0;
   final double _differentSideEdgeInsetValue = arrowButtonDimension / 2 - 20.0;
 
   Color get _backgroundColor =>
-      colors[_displayType == CurrencyDisplayType.RED ? "red" : "white"];
+      AppColors.backgroundForCurrencyDisplayType(_displayType);
 
-  Color get _textColor {
-    switch (_displayType) {
-      case CurrencyDisplayType.RED:
-        return colors["white"];
-      case CurrencyDisplayType.WHITE:
-        return colors["red"];
-    }
-  }
+  Color get _textColor => AppColors.accentForCurrencyDisplayType(_displayType);
 
   Widget _currencyLongNameWidget(String text) => InkWell(
       onTap: () {},
@@ -33,7 +26,7 @@ class CurrencyDisplayWidget extends StatelessWidget {
         text,
         textAlign: TextAlign.center,
         style: TextStyle(
-            color: _textColor, fontSize: 22.0, fontFamily: _fontFamily),
+            color: _textColor, fontSize: 22.0, fontFamily: AppFonts.quicksand),
       ));
 
   Widget _currencyValueWidget(String text, BuildContext context) {
@@ -48,7 +41,9 @@ class CurrencyDisplayWidget extends StatelessWidget {
             text,
             textAlign: TextAlign.center,
             style: TextStyle(
-                color: _textColor, fontSize: fontSize, fontFamily: _fontFamily),
+                color: _textColor,
+                fontSize: fontSize,
+                fontFamily: AppFonts.quicksand),
           )),
     );
   }
@@ -59,7 +54,7 @@ class CurrencyDisplayWidget extends StatelessWidget {
         style: TextStyle(
             color: _textColor,
             fontSize: 17.0,
-            fontFamily: _fontFamily,
+            fontFamily: AppFonts.quicksand,
             fontWeight: FontWeight.bold),
       );
 

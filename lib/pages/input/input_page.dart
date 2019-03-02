@@ -4,11 +4,10 @@ import 'package:kiwi/kiwi.dart' as dependencies;
 import 'package:minimalist_converter/common/models/currency_display_type.dart';
 import 'package:minimalist_converter/common/values/colors.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:minimalist_converter/common/values/fonts.dart';
 import 'package:minimalist_converter/pages/input/input_bloc.dart';
 import 'package:minimalist_converter/pages/input/input_event.dart';
 import 'package:minimalist_converter/pages/input/input_state.dart';
-
-//TODO: fontSizes, fontFamilies, onTaps, texts
 
 class InputPage extends StatefulWidget {
   final CurrencyDisplayType _displayType;
@@ -21,10 +20,10 @@ class InputPage extends StatefulWidget {
 
 class _InputPageState extends State<InputPage> {
   Color get _backgroundColor =>
-      colors[widget._displayType == CurrencyDisplayType.RED ? "red" : "white"];
+      AppColors.backgroundForCurrencyDisplayType(widget._displayType);
 
   Color get _accentColor =>
-      colors[widget._displayType == CurrencyDisplayType.RED ? "white" : "red"];
+      AppColors.accentForCurrencyDisplayType(widget._displayType);
 
   Widget _tapToDeleteButton(BuildContext context) {
     final orientation = MediaQuery.of(context).orientation;
@@ -40,7 +39,7 @@ class _InputPageState extends State<InputPage> {
           style: TextStyle(
               color: _accentColor,
               fontSize: 17.0,
-              fontFamily: 'Quicksand',
+              fontFamily: AppFonts.quicksand,
               fontWeight: FontWeight.bold),
         ),
       ),
@@ -63,7 +62,7 @@ class _InputPageState extends State<InputPage> {
               style: TextStyle(
                   color: _accentColor,
                   fontSize: 90.0,
-                  fontFamily: 'Quicksand',
+                  fontFamily: AppFonts.quicksand,
                   fontWeight: FontWeight.bold),
             ),
       ),
