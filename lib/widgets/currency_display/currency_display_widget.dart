@@ -11,6 +11,7 @@ import 'package:minimalist_converter/widgets/currency_display/currency_display_s
 class CurrencyDisplayWidget extends StatelessWidget {
   final CurrencyDisplayType _displayType;
   final Function(BuildContext, CurrencyDisplayType) _onValueWidgetPressed;
+  final Function(BuildContext, CurrencyDisplayType) _onLongNameWidgetPressed;
 
   final double _arrowButtonSideEdgeInsetValue = arrowButtonDimension / 2 + 15.0;
   final double _differentSideEdgeInsetValue = arrowButtonDimension / 2 - 20.0;
@@ -20,8 +21,8 @@ class CurrencyDisplayWidget extends StatelessWidget {
 
   Color get _textColor => AppColors.accentForCurrencyDisplayType(_displayType);
 
-  Widget _currencyLongNameWidget(String text) => InkWell(
-      onTap: () {},
+  Widget _currencyLongNameWidget(String text, BuildContext context) => InkWell(
+      onTap: () async => await _onLongNameWidgetPressed(context, _displayType),
       child: Text(
         text,
         textAlign: TextAlign.center,
@@ -78,7 +79,7 @@ class CurrencyDisplayWidget extends StatelessWidget {
       if (_displayType == CurrencyDisplayType.RED) {
         return [
           Padding(
-            child: _currencyLongNameWidget(state.currency.longName),
+            child: _currencyLongNameWidget(state.currency.longName, context),
             padding: _edgeInsets(InsetType.TOP, _differentSideEdgeInsetValue),
           ),
           _currencyValueWidget(state.displayValue, context),
@@ -96,7 +97,7 @@ class CurrencyDisplayWidget extends StatelessWidget {
           ),
           _currencyValueWidget(state.displayValue, context),
           Padding(
-            child: _currencyLongNameWidget(state.currency.longName),
+            child: _currencyLongNameWidget(state.currency.longName, context),
             padding:
                 _edgeInsets(InsetType.BOTTOM, _differentSideEdgeInsetValue),
           )
@@ -106,7 +107,7 @@ class CurrencyDisplayWidget extends StatelessWidget {
       if (_displayType == CurrencyDisplayType.RED) {
         return [
           Padding(
-            child: _currencyLongNameWidget(state.currency.longName),
+            child: _currencyLongNameWidget(state.currency.longName, context),
             padding: _edgeInsets(InsetType.TOP, _differentSideEdgeInsetValue),
           ),
           Padding(
@@ -123,7 +124,7 @@ class CurrencyDisplayWidget extends StatelessWidget {
       } else {
         return [
           Padding(
-            child: _currencyLongNameWidget(state.currency.longName),
+            child: _currencyLongNameWidget(state.currency.longName, context),
             padding: _edgeInsets(InsetType.TOP, _differentSideEdgeInsetValue),
           ),
           Padding(
@@ -152,7 +153,8 @@ class CurrencyDisplayWidget extends StatelessWidget {
         });
   }
 
-  CurrencyDisplayWidget(this._displayType, this._onValueWidgetPressed);
+  CurrencyDisplayWidget(this._displayType, this._onValueWidgetPressed,
+      this._onLongNameWidgetPressed);
 
   @override
   Widget build(BuildContext context) {

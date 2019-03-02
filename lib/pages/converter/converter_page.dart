@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kiwi/kiwi.dart' as dependencies;
+import 'package:minimalist_converter/common/models/currency.dart';
 import 'package:minimalist_converter/common/models/currency_display_type.dart';
 import 'package:minimalist_converter/common/values/colors.dart';
 import 'package:minimalist_converter/pages/converter/converter_bloc.dart';
 import 'package:minimalist_converter/pages/converter/converter_event.dart';
 import 'package:minimalist_converter/pages/converter/converter_state.dart';
+import 'package:minimalist_converter/pages/currency_list/currency_list_page.dart';
 import 'package:minimalist_converter/pages/input/input_bloc.dart';
 import 'package:minimalist_converter/pages/input/input_page.dart';
 import 'package:minimalist_converter/widgets/currency_display/currency_display_bloc.dart';
@@ -28,14 +30,18 @@ class _ConverterPageState extends State<ConverterPage> {
           flex: 1,
           child: BlocProvider(
               child: CurrencyDisplayWidget(
-                  CurrencyDisplayType.RED, _showInputPageAndHandleResult),
+                  CurrencyDisplayType.RED,
+                  _showInputPageAndHandleResult,
+                  _showCurrencyListPageAndHandleResult),
               bloc: _redDisplayBloc),
         ),
         Expanded(
             flex: 1,
             child: BlocProvider(
                 child: CurrencyDisplayWidget(
-                    CurrencyDisplayType.WHITE, _showInputPageAndHandleResult),
+                    CurrencyDisplayType.WHITE,
+                    _showInputPageAndHandleResult,
+                    _showCurrencyListPageAndHandleResult),
                 bloc: _whiteDisplayBloc)),
       ];
 
@@ -59,6 +65,18 @@ class _ConverterPageState extends State<ConverterPage> {
               child: InputPage(displayType),
               bloc: dependencies.Container().resolve<InputBloc>())),
     );
+  }
+
+  void _showCurrencyListPageAndHandleResult(
+      BuildContext context, CurrencyDisplayType displayType) async {
+    final result = await _showCurrenciesList(context, displayType);
+    if (result != null) {}
+  }
+
+  Future<Currency> _showCurrenciesList(
+      BuildContext context, CurrencyDisplayType displayType) async {
+    return await Navigator.push(context,
+        MaterialPageRoute(builder: (context) => CurrencyListPage(displayType)));
   }
 
   Widget _mainDisplay(BuildContext context) {

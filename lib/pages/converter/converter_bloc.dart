@@ -30,6 +30,7 @@ class ConverterBloc extends Bloc<ConverterEvent, ConverterState> {
   @override
   Stream<ConverterState> mapEventToState(
       ConverterState currentState, ConverterEvent event) async* {
+    //TODO: check arrow direction - perform request to db/api if needed
     if (event is UpdateAmount) {
       switch (event.type) {
         case CurrencyDisplayType.RED:
@@ -69,6 +70,12 @@ class ConverterBloc extends Bloc<ConverterEvent, ConverterState> {
           .add(UpdateDisplayedCurrency(revertedState.whiteCurrency));
 
       yield revertedState;
+    } else if (event is ChangeArrowDirection) {
+      yield currentState.copyWith(
+          arrowDirection:
+              currentState.arrowDirection == ArrowDirection.TOWARDS_RED
+                  ? ArrowDirection.TOWARDS_WHITE
+                  : ArrowDirection.TOWARDS_RED);
     }
   }
 
