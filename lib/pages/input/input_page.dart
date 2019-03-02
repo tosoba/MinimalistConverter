@@ -293,7 +293,6 @@ class _InputPageState extends State<InputPage> {
   }
 }
 
-//TODO: make it similar to arrow button with ink effect and stuff...
 class _InputButton extends StatelessWidget {
   final Color _backgroundColor;
   final Widget _child;

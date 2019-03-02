@@ -5,21 +5,10 @@ import 'package:kiwi/kiwi.dart' as dependencies;
 import 'package:minimalist_converter/dependencies.dart';
 import 'package:minimalist_converter/pages/converter/converter_bloc.dart';
 import 'package:minimalist_converter/pages/converter/converter_page.dart';
-
-class SimpleBlocDelegate extends BlocDelegate {
-  @override
-  void onTransition(Transition transition) {
-    print(transition);
-  }
-
-  @override
-  void onError(Object error, StackTrace stacktrace) {
-    print(error);
-  }
-}
+import 'package:minimalist_converter/pages/input/input_bloc.dart';
 
 void main() {
-  BlocSupervisor().delegate = SimpleBlocDelegate();
+  BlocSupervisor().delegate = _SimpleBlocDelegate();
   initDependencyContainer();
   runApp(ConverterApp());
 }
@@ -31,7 +20,7 @@ class ConverterApp extends StatefulWidget {
 
 class _ConverterAppState extends State<ConverterApp> {
   final ConverterBloc _converterBloc =
-  dependencies.Container().resolve<ConverterBloc>("converter_bloc");
+      dependencies.Container().resolve<ConverterBloc>("converter_bloc");
 
   @override
   Widget build(BuildContext context) => MaterialApp(
@@ -47,6 +36,19 @@ class _ConverterAppState extends State<ConverterApp> {
   @override
   void dispose() {
     _converterBloc.dispose();
+    dependencies.Container().resolve<InputBloc>().dispose();
     super.dispose();
+  }
+}
+
+class _SimpleBlocDelegate extends BlocDelegate {
+  @override
+  void onTransition(Transition transition) {
+    print(transition);
+  }
+
+  @override
+  void onError(Object error, StackTrace stacktrace) {
+    print(error);
   }
 }

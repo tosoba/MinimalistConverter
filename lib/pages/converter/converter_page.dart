@@ -70,7 +70,10 @@ class _ConverterPageState extends State<ConverterPage> {
   void _showCurrencyListPageAndHandleResult(
       BuildContext context, CurrencyDisplayType displayType) async {
     final result = await _showCurrenciesList(context, displayType);
-    if (result != null) {}
+    if (result != null) {
+      BlocProvider.of<ConverterBloc>(context)
+          .dispatch(UpdateCurrency(displayType, result));
+    }
   }
 
   Future<Currency> _showCurrenciesList(

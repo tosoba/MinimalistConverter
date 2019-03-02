@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:minimalist_converter/common/models/currency_display_type.dart';
+import 'package:minimalist_converter/data/repository/converter_repository.dart';
 import 'package:minimalist_converter/pages/converter/converter_event.dart';
 import 'package:minimalist_converter/pages/converter/converter_state.dart';
 import 'package:minimalist_converter/widgets/currency_display/currency_display_event.dart';
@@ -24,6 +25,10 @@ class ConverterBloc extends Bloc<ConverterEvent, ConverterState> {
   CurrencyDisplayState get initialWhiteDisplayState => CurrencyDisplayState(
       initialState.whiteCurrency, initialState.whiteAmount.toString());
 
+  final ConverterRepository _repository;
+
+  ConverterBloc(this._repository) : super();
+
   @override
   ConverterState get initialState => ConverterState.initial();
 
@@ -36,12 +41,24 @@ class ConverterBloc extends Bloc<ConverterEvent, ConverterState> {
         case CurrencyDisplayType.RED:
           _redCurrencyDisplaySubject
               .add(UpdateCurrencyAmount(event.amount.toString()));
-          yield currentState.copyWith(redAmount: event.amount);
+          if (currentState.arrowDirection == ArrowDirection.TOWARDS_RED) {
+            yield currentState.copyWith(
+                redAmount: event.amount,
+                arrowDirection: ArrowDirection.TOWARDS_WHITE);
+          } else {
+            yield currentState.copyWith(redAmount: event.amount);
+          }
           break;
         case CurrencyDisplayType.WHITE:
           _whiteCurrencyDisplaySubject
               .add(UpdateCurrencyAmount(event.amount.toString()));
-          yield currentState.copyWith(whiteAmount: event.amount);
+          if (currentState.arrowDirection == ArrowDirection.TOWARDS_WHITE) {
+            yield currentState.copyWith(
+                whiteAmount: event.amount,
+                arrowDirection: ArrowDirection.TOWARDS_RED);
+          } else {
+            yield currentState.copyWith(whiteAmount: event.amount);
+          }
           break;
       }
     } else if (event is UpdateCurrency) {
