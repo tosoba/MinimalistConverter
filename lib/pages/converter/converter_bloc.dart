@@ -7,6 +7,12 @@ import 'package:minimalist_converter/widgets/currency_display/currency_display_e
 import 'package:minimalist_converter/widgets/currency_display/currency_display_state.dart';
 import 'package:rxdart/rxdart.dart';
 
+class _JustUpdateAmount extends ConverterUpdateEvent {
+  final double amount;
+
+  _JustUpdateAmount(CurrencyDisplayType type, this.amount) : super(type);
+}
+
 class ConverterBloc extends Bloc<ConverterEvent, ConverterState> {
   final PublishSubject<CurrencyDisplayEvent> _redCurrencyDisplaySubject =
       PublishSubject();
@@ -32,6 +38,22 @@ class ConverterBloc extends Bloc<ConverterEvent, ConverterState> {
   @override
   ConverterState get initialState => ConverterState.initial();
 
+  _loadExchangeRateAndDispatchUpdateAmount(
+      String baseCurrencyShortName,
+      String outputCurrencyShortName,
+      double baseCurrencyAmount,
+      CurrencyDisplayType outputDisplayType) async {
+    final rate = await _repository.loadExchangeRate(
+        baseCurrencyShortName, outputCurrencyShortName);
+    if (rate == null) {
+      return; //TODO: error handling
+    }
+
+    final outputAmount = baseCurrencyAmount * rate;
+    dispatch(_JustUpdateAmount(
+        outputDisplayType, num.parse(outputAmount.toStringAsFixed(2))));
+  }
+
   @override
   Stream<ConverterState> mapEventToState(
       ConverterState currentState, ConverterEvent event) async* {
@@ -48,7 +70,14 @@ class ConverterBloc extends Bloc<ConverterEvent, ConverterState> {
           } else {
             yield currentState.copyWith(redAmount: event.amount);
           }
+
+          await _loadExchangeRateAndDispatchUpdateAmount(
+              currentState.redCurrency.shortName,
+              currentState.whiteCurrency.shortName,
+              event.amount,
+              CurrencyDisplayType.WHITE);
           break;
+
         case CurrencyDisplayType.WHITE:
           _whiteCurrencyDisplaySubject
               .add(UpdateCurrencyAmount(event.amount.toString()));
@@ -59,6 +88,12 @@ class ConverterBloc extends Bloc<ConverterEvent, ConverterState> {
           } else {
             yield currentState.copyWith(whiteAmount: event.amount);
           }
+
+          await _loadExchangeRateAndDispatchUpdateAmount(
+              currentState.whiteCurrency.shortName,
+              currentState.redCurrency.shortName,
+              event.amount,
+              CurrencyDisplayType.RED);
           break;
       }
     } else if (event is UpdateCurrency) {
@@ -67,11 +102,40 @@ class ConverterBloc extends Bloc<ConverterEvent, ConverterState> {
           _redCurrencyDisplaySubject
               .add(UpdateDisplayedCurrency(event.currency));
           yield currentState.copyWith(redCurrency: event.currency);
+
+          await _loadExchangeRateAndDispatchUpdateAmount(
+              currentState.arrowDirection == ArrowDirection.TOWARDS_RED
+                  ? currentState.whiteCurrency.shortName
+                  : event.currency.shortName,
+              currentState.arrowDirection == ArrowDirection.TOWARDS_RED
+                  ? event.currency.shortName
+                  : currentState.whiteCurrency.shortName,
+              currentState.arrowDirection == ArrowDirection.TOWARDS_RED
+                  ? currentState.whiteAmount
+                  : currentState.redAmount,
+              currentState.arrowDirection == ArrowDirection.TOWARDS_RED
+                  ? CurrencyDisplayType.RED
+                  : CurrencyDisplayType.WHITE);
           break;
+
         case CurrencyDisplayType.WHITE:
           _whiteCurrencyDisplaySubject
               .add(UpdateDisplayedCurrency(event.currency));
           yield currentState.copyWith(whiteCurrency: event.currency);
+
+          await _loadExchangeRateAndDispatchUpdateAmount(
+              currentState.arrowDirection == ArrowDirection.TOWARDS_RED
+                  ? event.currency.shortName
+                  : currentState.redCurrency.shortName,
+              currentState.arrowDirection == ArrowDirection.TOWARDS_RED
+                  ? currentState.redCurrency.shortName
+                  : event.currency.shortName,
+              currentState.arrowDirection == ArrowDirection.TOWARDS_RED
+                  ? currentState.whiteAmount
+                  : currentState.redAmount,
+              currentState.arrowDirection == ArrowDirection.TOWARDS_RED
+                  ? CurrencyDisplayType.RED
+                  : CurrencyDisplayType.WHITE);
           break;
       }
     } else if (event is SwapRedAndWhite) {
@@ -87,12 +151,33 @@ class ConverterBloc extends Bloc<ConverterEvent, ConverterState> {
           .add(UpdateDisplayedCurrency(revertedState.whiteCurrency));
 
       yield revertedState;
-    } else if (event is ChangeArrowDirection) {
-      yield currentState.copyWith(
-          arrowDirection:
-              currentState.arrowDirection == ArrowDirection.TOWARDS_RED
-                  ? ArrowDirection.TOWARDS_WHITE
-                  : ArrowDirection.TOWARDS_RED);
+
+      await _loadExchangeRateAndDispatchUpdateAmount(
+          revertedState.arrowDirection == ArrowDirection.TOWARDS_RED
+              ? revertedState.whiteCurrency.shortName
+              : revertedState.redCurrency.shortName,
+          revertedState.arrowDirection == ArrowDirection.TOWARDS_RED
+              ? revertedState.redCurrency.shortName
+              : revertedState.whiteCurrency.shortName,
+          revertedState.arrowDirection == ArrowDirection.TOWARDS_RED
+              ? revertedState.whiteAmount
+              : revertedState.redAmount,
+          revertedState.arrowDirection == ArrowDirection.TOWARDS_RED
+              ? CurrencyDisplayType.RED
+              : CurrencyDisplayType.WHITE);
+    } else if (event is _JustUpdateAmount) {
+      switch (event.type) {
+        case CurrencyDisplayType.RED:
+          _redCurrencyDisplaySubject
+              .add(UpdateCurrencyAmount(event.amount.toString()));
+          yield currentState.copyWith(redAmount: event.amount);
+          break;
+        case CurrencyDisplayType.WHITE:
+          _whiteCurrencyDisplaySubject
+              .add(UpdateCurrencyAmount(event.amount.toString()));
+          yield currentState.copyWith(whiteAmount: event.amount);
+          break;
+      }
     }
   }
 

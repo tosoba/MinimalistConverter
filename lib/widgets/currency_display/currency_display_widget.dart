@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:minimalist_converter/common/models/currency_display_type.dart';
 import 'package:minimalist_converter/common/models/inset_type.dart';
 import 'package:minimalist_converter/common/values/colors.dart';
@@ -38,8 +39,10 @@ class CurrencyDisplayWidget extends StatelessWidget {
     return Center(
       child: InkWell(
           onTap: () async => await _onValueWidgetPressed(context, _displayType),
-          child: Text(
+          child: AutoSizeText(
             text,
+            maxLines: 1,
+            maxFontSize: fontSize,
             textAlign: TextAlign.center,
             style: TextStyle(
                 color: _textColor,

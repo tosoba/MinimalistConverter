@@ -7,15 +7,16 @@ class ConverterRepository {
 
   ConverterRepository(this._network, this._local);
 
-  Future<double> loadExchangeRate(String baseCurrencySymbol) async {
-    final cached = _local.getRatesForCurrencyWith(baseCurrencySymbol);
-    if (cached == null) {
-      final response = await _network.loadExchangeRates(baseCurrencySymbol);
+  Future<double> loadExchangeRate(
+      String baseCurrencyShortName, String outputCurrencyShortName) async {
+    final cachedRates = _local.getRatesForCurrencyWith(baseCurrencyShortName);
+    if (cachedRates == null) {
+      final response = await _network.loadExchangeRates(baseCurrencyShortName);
       if (response == null) return null;
       _local.storeRatesFrom(response);
-      return response.exchangeRates[baseCurrencySymbol];
+      return response.exchangeRates[outputCurrencyShortName];
     } else {
-      return cached[baseCurrencySymbol];
+      return cachedRates[outputCurrencyShortName];
     }
   }
 }

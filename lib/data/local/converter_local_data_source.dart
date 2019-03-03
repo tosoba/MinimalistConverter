@@ -4,10 +4,10 @@ class ConverterLocalDataSource {
   final Map<String, Map<String, double>> _cache = Map();
 
   void storeRatesFrom(ExchangeRatesResponse response) {
-    _cache[response.baseCurrencySymbol] = response.exchangeRates;
+    _cache[response.baseCurrencyShortName] = response.exchangeRates;
   }
 
-  Map<String, double> getRatesForCurrencyWith(String symbol) {
-    return _cache.containsKey(symbol) ? _cache[symbol] : null;
+  Map<String, double> getRatesForCurrencyWith(String shortName) {
+    return _cache.containsKey(shortName) ? _cache[shortName] : null;
   }
 }

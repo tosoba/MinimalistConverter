@@ -22,5 +22,3 @@ class UpdateAmount extends ConverterUpdateEvent {
 }
 
 class SwapRedAndWhite extends ConverterEvent {}
-
-class ChangeArrowDirection extends ConverterEvent {}

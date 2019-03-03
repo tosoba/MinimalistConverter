@@ -10,8 +10,8 @@ class ConverterNetworkDataSource {
   ConverterNetworkDataSource(this.client);
 
   Future<ExchangeRatesResponse> loadExchangeRates(
-      String baseCurrencySymbol) async {
-    final urlEncoded = Uri.encodeFull('$baseUrl?base=$baseCurrencySymbol');
+      String baseCurrencyShortName) async {
+    final urlEncoded = Uri.encodeFull('$baseUrl?base=$baseCurrencyShortName');
     final response = await client.get(urlEncoded);
     if (response.statusCode == 200)
       return ExchangeRatesResponse.fromJson(json.decode(response.body));
