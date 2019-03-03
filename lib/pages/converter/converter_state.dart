@@ -25,12 +25,13 @@ class ConverterState {
       .._arrowDirection = ArrowDirection.TOWARDS_WHITE;
   }
 
-  factory ConverterState.reverted(ConverterState other) {
+  factory ConverterState.withRevertedCurrenciesAndArrowDirection(
+      ConverterState other) {
     return ConverterState._()
+      .._redAmount = other._redAmount
+      .._whiteAmount = other._whiteAmount
       .._redCurrency = other._whiteCurrency
-      .._redAmount = other._whiteAmount
       .._whiteCurrency = other._redCurrency
-      .._whiteAmount = other._redAmount
       .._arrowDirection = other._arrowDirection == ArrowDirection.TOWARDS_RED
           ? ArrowDirection.TOWARDS_WHITE
           : ArrowDirection.TOWARDS_RED;

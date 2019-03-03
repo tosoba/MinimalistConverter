@@ -139,12 +139,9 @@ class ConverterBloc extends Bloc<ConverterEvent, ConverterState> {
           break;
       }
     } else if (event is SwapRedAndWhite) {
-      final revertedState = ConverterState.reverted(currentState);
+      final revertedState =
+          ConverterState.withRevertedCurrenciesAndArrowDirection(currentState);
 
-      _redCurrencyDisplaySubject
-          .add(UpdateCurrencyAmount(revertedState.redAmount.toString()));
-      _whiteCurrencyDisplaySubject
-          .add(UpdateCurrencyAmount(revertedState.whiteAmount.toString()));
       _redCurrencyDisplaySubject
           .add(UpdateDisplayedCurrency(revertedState.redCurrency));
       _whiteCurrencyDisplaySubject
@@ -172,6 +169,7 @@ class ConverterBloc extends Bloc<ConverterEvent, ConverterState> {
               .add(UpdateCurrencyAmount(event.amount.toString()));
           yield currentState.copyWith(redAmount: event.amount);
           break;
+
         case CurrencyDisplayType.WHITE:
           _whiteCurrencyDisplaySubject
               .add(UpdateCurrencyAmount(event.amount.toString()));
