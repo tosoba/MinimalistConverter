@@ -157,6 +157,8 @@ class _ConverterPageState extends State<ConverterPage>
         Widget returnedWidget;
         if (connected) {
           if (wasOffline) {
+            BlocProvider.of<ConverterBloc>(context)
+                .dispatch(RetryAfterGoingOnline());
             _onlineMessageAnimationController.forward(from: 0.0);
             final onlineMessage = _OnlineMessage(
               connectionInfoBox,

@@ -11,10 +11,15 @@ class ConverterRepository {
       String baseCurrencyShortName, String outputCurrencyShortName) async {
     final cachedRates = _local.getRatesForCurrencyWith(baseCurrencyShortName);
     if (cachedRates == null) {
-      final response = await _network.loadExchangeRates(baseCurrencyShortName);
-      if (response == null) return null;
-      _local.storeRatesFrom(response);
-      return response.exchangeRates[outputCurrencyShortName];
+      try {
+        final response =
+            await _network.loadExchangeRates(baseCurrencyShortName);
+        if (response == null) return null;
+        _local.storeRatesFrom(response);
+        return response.exchangeRates[outputCurrencyShortName];
+      } catch (e) {
+        return null;
+      }
     } else {
       return cachedRates[outputCurrencyShortName];
     }

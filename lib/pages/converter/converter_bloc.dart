@@ -13,6 +13,19 @@ class _JustUpdateAmount extends ConverterUpdateEvent {
   _JustUpdateAmount(CurrencyDisplayType type, this.amount) : super(type);
 }
 
+class _LoadExchangeRatesArgs {
+  final String baseCurrencyShortName;
+  final String outputCurrencyShortName;
+  final double baseCurrencyAmount;
+  final CurrencyDisplayType outputDisplayType;
+
+  _LoadExchangeRatesArgs(
+      this.baseCurrencyShortName,
+      this.outputCurrencyShortName,
+      this.baseCurrencyAmount,
+      this.outputDisplayType);
+}
+
 class ConverterBloc extends Bloc<ConverterEvent, ConverterState> {
   final PublishSubject<CurrencyDisplayEvent> _redCurrencyDisplaySubject =
       PublishSubject();
@@ -29,10 +42,11 @@ class ConverterBloc extends Bloc<ConverterEvent, ConverterState> {
       initialState.redCurrency, initialState.redAmount.toStringAsFixed(2));
 
   CurrencyDisplayState get initialWhiteDisplayState => CurrencyDisplayState(
-      initialState.whiteCurrency,
-      initialState.whiteAmount.toStringAsFixed(2));
+      initialState.whiteCurrency, initialState.whiteAmount.toStringAsFixed(2));
 
   final ConverterRepository _repository;
+
+  _LoadExchangeRatesArgs _argsToRetry;
 
   ConverterBloc(this._repository) : super();
 
@@ -47,9 +61,12 @@ class ConverterBloc extends Bloc<ConverterEvent, ConverterState> {
     final rate = await _repository.loadExchangeRate(
         baseCurrencyShortName, outputCurrencyShortName);
     if (rate == null) {
+      _argsToRetry = _LoadExchangeRatesArgs(baseCurrencyShortName,
+          outputCurrencyShortName, baseCurrencyAmount, outputDisplayType);
       return; //TODO: error handling
     }
 
+    _argsToRetry = null;
     final outputAmount = baseCurrencyAmount * rate;
     dispatch(_JustUpdateAmount(
         outputDisplayType, num.parse(outputAmount.toStringAsFixed(2))));
@@ -176,6 +193,14 @@ class ConverterBloc extends Bloc<ConverterEvent, ConverterState> {
               .add(UpdateCurrencyAmount(event.amount.toStringAsFixed(2)));
           yield currentState.copyWith(whiteAmount: event.amount);
           break;
+      }
+    } else if (event is RetryAfterGoingOnline) {
+      if (_argsToRetry != null) {
+        _loadExchangeRateAndDispatchUpdateAmount(
+            _argsToRetry.baseCurrencyShortName,
+            _argsToRetry.outputCurrencyShortName,
+            _argsToRetry.baseCurrencyAmount,
+            _argsToRetry.outputDisplayType);
       }
     }
   }

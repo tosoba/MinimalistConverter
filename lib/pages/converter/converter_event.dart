@@ -22,3 +22,5 @@ class UpdateAmount extends ConverterUpdateEvent {
 }
 
 class SwapRedAndWhite extends ConverterEvent {}
+
+class RetryAfterGoingOnline extends ConverterEvent {}
