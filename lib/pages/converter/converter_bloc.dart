@@ -26,10 +26,11 @@ class ConverterBloc extends Bloc<ConverterEvent, ConverterState> {
       _whiteCurrencyDisplaySubject.stream.distinct();
 
   CurrencyDisplayState get initialRedDisplayState => CurrencyDisplayState(
-      initialState.redCurrency, initialState.redAmount.toString());
+      initialState.redCurrency, initialState.redAmount.toStringAsFixed(2));
 
   CurrencyDisplayState get initialWhiteDisplayState => CurrencyDisplayState(
-      initialState.whiteCurrency, initialState.whiteAmount.toString());
+      initialState.whiteCurrency,
+      initialState.whiteAmount.toStringAsFixed(2));
 
   final ConverterRepository _repository;
 
@@ -62,7 +63,7 @@ class ConverterBloc extends Bloc<ConverterEvent, ConverterState> {
       switch (event.type) {
         case CurrencyDisplayType.RED:
           _redCurrencyDisplaySubject
-              .add(UpdateCurrencyAmount(event.amount.toString()));
+              .add(UpdateCurrencyAmount(event.amount.toStringAsFixed(2)));
           if (currentState.arrowDirection == ArrowDirection.TOWARDS_RED) {
             yield currentState.copyWith(
                 redAmount: event.amount,
@@ -80,7 +81,7 @@ class ConverterBloc extends Bloc<ConverterEvent, ConverterState> {
 
         case CurrencyDisplayType.WHITE:
           _whiteCurrencyDisplaySubject
-              .add(UpdateCurrencyAmount(event.amount.toString()));
+              .add(UpdateCurrencyAmount(event.amount.toStringAsFixed(2)));
           if (currentState.arrowDirection == ArrowDirection.TOWARDS_WHITE) {
             yield currentState.copyWith(
                 whiteAmount: event.amount,
@@ -166,13 +167,13 @@ class ConverterBloc extends Bloc<ConverterEvent, ConverterState> {
       switch (event.type) {
         case CurrencyDisplayType.RED:
           _redCurrencyDisplaySubject
-              .add(UpdateCurrencyAmount(event.amount.toString()));
+              .add(UpdateCurrencyAmount(event.amount.toStringAsFixed(2)));
           yield currentState.copyWith(redAmount: event.amount);
           break;
 
         case CurrencyDisplayType.WHITE:
           _whiteCurrencyDisplaySubject
-              .add(UpdateCurrencyAmount(event.amount.toString()));
+              .add(UpdateCurrencyAmount(event.amount.toStringAsFixed(2)));
           yield currentState.copyWith(whiteAmount: event.amount);
           break;
       }
