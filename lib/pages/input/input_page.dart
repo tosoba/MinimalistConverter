@@ -44,12 +44,10 @@ class _InputPageState extends State<InputPage> {
         ),
       ),
     );
-    return orientation == Orientation.portrait
-        ? align
-        : Padding(
-            child: align,
-            padding: EdgeInsets.symmetric(vertical: 15.0),
-          );
+    return Padding(
+      child: align,
+      padding: EdgeInsets.symmetric(vertical: 15.0),
+    );
   }
 
   Widget _inputTextField(BuildContext context) {
@@ -84,21 +82,16 @@ class _InputPageState extends State<InputPage> {
   }
 
   Widget _backButton(BuildContext context) {
-    final orientation = MediaQuery.of(context).orientation;
-    return Padding(
-      padding: orientation == Orientation.portrait
-          ? EdgeInsets.symmetric(horizontal: 10.0)
-          : EdgeInsets.symmetric(horizontal: 10.0, vertical: 15.0),
-      child: Align(
-        alignment: orientation == Orientation.portrait
-            ? AlignmentDirectional.centerStart
-            : AlignmentDirectional.topStart,
-        child: InkWell(
-          onTap: () => Navigator.pop(context),
-          child: Icon(
-            Icons.arrow_back,
-            color: _accentColor,
-          ),
+    return Align(
+      alignment: MediaQuery.of(context).orientation == Orientation.portrait
+          ? AlignmentDirectional.centerStart
+          : AlignmentDirectional.topStart,
+      child: RawMaterialButton(
+        onPressed: () => Navigator.pop(context),
+        shape: CircleBorder(),
+        child: Icon(
+          Icons.arrow_back,
+          color: _accentColor,
         ),
       ),
     );
@@ -228,7 +221,10 @@ class _InputPageState extends State<InputPage> {
 
   Widget _backAndBackspaceButtonsRow(BuildContext context) {
     return Stack(
-      children: <Widget>[_backButton(context), _tapToDeleteButton(context)],
+      children: <Widget>[
+        _backButton(context),
+        _tapToDeleteButton(context),
+      ],
     );
   }
 
@@ -251,7 +247,7 @@ class _InputPageState extends State<InputPage> {
                 children: _verticalColumnWidgets(context))
             : Row(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Expanded(
                     flex: 3,
@@ -284,10 +280,8 @@ class _InputPageState extends State<InputPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Material(
-        child: Container(
-          color: _backgroundColor,
-          child: _mainWidget(context),
-        ),
+        color: _backgroundColor,
+        child: _mainWidget(context),
       ),
     );
   }
