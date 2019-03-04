@@ -31,22 +31,27 @@ class _InputPageState extends State<InputPage> {
       alignment: orientation == Orientation.portrait
           ? AlignmentDirectional.center
           : AlignmentDirectional.topCenter,
-      child: InkWell(
-        onTap: () =>
+      child: RawMaterialButton(
+        onPressed: () =>
             BlocProvider.of<InputBloc>(context).dispatch(RemoveLastCharacter()),
-        child: Text(
-          'tap to delete',
-          style: TextStyle(
-              color: _accentColor,
-              fontSize: 17.0,
-              fontFamily: AppFonts.quicksand,
-              fontWeight: FontWeight.bold),
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 10.0),
+          child: Text(
+            'tap to delete',
+            style: TextStyle(
+                color: _accentColor,
+                fontSize: 17.0,
+                fontFamily: AppFonts.quicksand,
+                fontWeight: FontWeight.bold),
+          ),
         ),
       ),
     );
     return Padding(
       child: align,
-      padding: EdgeInsets.symmetric(vertical: 15.0),
+      padding: orientation == Orientation.portrait
+          ? EdgeInsets.symmetric(vertical: 15.0)
+          : EdgeInsets.zero,
     );
   }
 
@@ -298,8 +303,8 @@ class _InputButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: MediaQuery.of(context).orientation == Orientation.landscape
-          ? EdgeInsets.symmetric(vertical: 0.0, horizontal: 5.0)
-          : EdgeInsets.all(0.0),
+          ? EdgeInsets.symmetric(horizontal: 5.0)
+          : EdgeInsets.zero,
       child: RawMaterialButton(
         onPressed: _onPressed,
         shape: CircleBorder(),
