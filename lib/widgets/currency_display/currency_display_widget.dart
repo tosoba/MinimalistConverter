@@ -22,14 +22,21 @@ class CurrencyDisplayWidget extends StatelessWidget {
 
   Color get _textColor => AppColors.accentForCurrencyDisplayType(_displayType);
 
-  Widget _currencyLongNameWidget(String text, BuildContext context) => InkWell(
-      onTap: () async => await _onLongNameWidgetPressed(context, _displayType),
-      child: Text(
-        text,
-        textAlign: TextAlign.center,
-        style: TextStyle(
-            color: _textColor, fontSize: 22.0, fontFamily: AppFonts.quicksand),
-      ));
+  Widget _currencyLongNameWidget(String text, BuildContext context) => Center(
+      child: RawMaterialButton(
+          onPressed: () async =>
+              await _onLongNameWidgetPressed(context, _displayType),
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 10.0),
+            child: Text(
+              text,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  color: _textColor,
+                  fontSize: 22.0,
+                  fontFamily: AppFonts.quicksand),
+            ),
+          )));
 
   Widget _currencyValueWidget(String text, BuildContext context) {
     final height = MediaQuery.of(context).size.height;
@@ -37,17 +44,21 @@ class CurrencyDisplayWidget extends StatelessWidget {
         ? height / 8
         : height / 4;
     return Center(
-      child: InkWell(
-          onTap: () async => await _onValueWidgetPressed(context, _displayType),
-          child: AutoSizeText(
-            text,
-            maxLines: 1,
-            maxFontSize: fontSize,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                color: _textColor,
-                fontSize: fontSize,
-                fontFamily: AppFonts.quicksand),
+      child: RawMaterialButton(
+          onPressed: () async =>
+              await _onValueWidgetPressed(context, _displayType),
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 10.0),
+            child: AutoSizeText(
+              text,
+              maxLines: 1,
+              maxFontSize: fontSize,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  color: _textColor,
+                  fontSize: fontSize,
+                  fontFamily: AppFonts.quicksand),
+            ),
           )),
     );
   }

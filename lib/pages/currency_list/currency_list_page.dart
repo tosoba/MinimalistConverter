@@ -17,16 +17,14 @@ class CurrencyListPage extends StatelessWidget {
       AppColors.accentForCurrencyDisplayType(_displayType);
 
   Widget _backButton(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 15.0),
-      child: Align(
-        alignment: AlignmentDirectional.topStart,
-        child: InkWell(
-          onTap: () => Navigator.pop(context),
-          child: Icon(
-            Icons.arrow_back,
-            color: _accentColor,
-          ),
+    return Align(
+      alignment: AlignmentDirectional.topStart,
+      child: RawMaterialButton(
+        shape: CircleBorder(),
+        onPressed: () => Navigator.pop(context),
+        child: Icon(
+          Icons.arrow_back,
+          color: _accentColor,
         ),
       ),
     );
@@ -48,8 +46,7 @@ class CurrencyListPage extends StatelessWidget {
         child: Container(
           color: _backgroundColor,
           child: Padding(
-            padding: EdgeInsets.symmetric(
-                vertical: statusBarHeight, horizontal: 15.0),
+            padding: EdgeInsets.symmetric(vertical: statusBarHeight),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
@@ -82,27 +79,30 @@ class _CurrencyListItem extends StatelessWidget {
       onPressed: () => Navigator.pop(context, _currency),
       shape: BeveledRectangleBorder(),
       elevation: 0.0,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            _currency.longName,
-            style: TextStyle(
-                fontSize: 17,
-                color: _longNameColor,
-                fontFamily: AppFonts.quicksand),
-          ),
-          Padding(
-            padding: EdgeInsets.only(left: 3.0),
-            child: Text(
-              _currency.shortName,
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 15.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Text(
+              _currency.longName,
               style: TextStyle(
-                  fontSize: 15,
-                  color: _shortNameColor,
+                  fontSize: 17,
+                  color: _longNameColor,
                   fontFamily: AppFonts.quicksand),
             ),
-          )
-        ],
+            Padding(
+              padding: EdgeInsets.only(left: 3.0),
+              child: Text(
+                _currency.shortName,
+                style: TextStyle(
+                    fontSize: 15,
+                    color: _shortNameColor,
+                    fontFamily: AppFonts.quicksand),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

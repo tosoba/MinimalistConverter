@@ -27,6 +27,8 @@ class _ConverterPageState extends State<ConverterPage>
   final CurrencyDisplayBloc _whiteDisplayBloc = dependencies.Container()
       .resolve<CurrencyDisplayBloc>("white_currency_display_bloc");
 
+  bool wasOffline = false;
+
   List<Widget> get _currencyDisplays => [
         Expanded(
           flex: 1,
@@ -129,7 +131,6 @@ class _ConverterPageState extends State<ConverterPage>
   }
 
   //TODO: dispatch last action after going back online again if it failed before because of no internet
-  //TODO: make online message disappear after some time -> use animated widget for it - tune the animation
   Widget _mainBody(BuildContext context) {
     return OfflineBuilder(
       connectivityBuilder: (
@@ -153,24 +154,33 @@ class _ConverterPageState extends State<ConverterPage>
             ),
           ),
         );
+        Widget returnedWidget;
         if (connected) {
-          _onlineMessageAnimationController.forward(from: 0.0);
-          final onlineMessage = _OnlineMessage(
-            connectionInfoBox,
-            _onlineMessageVisibilityDuration,
-            animation: StepTween(
-              begin: 0,
-              end: _onlineMessageVisibilityDuration,
-            ).animate(_onlineMessageAnimationController),
-          );
-          return Stack(
-            children: <Widget>[child, onlineMessage],
-          );
+          if (wasOffline) {
+            _onlineMessageAnimationController.forward(from: 0.0);
+            final onlineMessage = _OnlineMessage(
+              connectionInfoBox,
+              _onlineMessageVisibilityDuration,
+              animation: StepTween(
+                begin: 0,
+                end: _onlineMessageVisibilityDuration,
+              ).animate(_onlineMessageAnimationController),
+            );
+            returnedWidget = Stack(
+              children: <Widget>[child, onlineMessage],
+            );
+          } else {
+            returnedWidget = Stack(
+              children: <Widget>[child],
+            );
+          }
         } else {
-          return Stack(
+          returnedWidget = Stack(
             children: <Widget>[child, connectionInfoBox],
           );
         }
+        wasOffline = !connected;
+        return returnedWidget;
       },
       child: Stack(
         children: <Widget>[_mainDisplay(context), _arrowButton(context)],
