@@ -7,11 +7,16 @@ import 'package:minimalist_converter/widgets/currency_display/currency_display_e
 import 'package:minimalist_converter/widgets/currency_display/currency_display_state.dart';
 import 'package:rxdart/rxdart.dart';
 
-class _JustUpdateAmount extends ConverterUpdateEvent {
+class _JustUpdateAmountAndFinishLoading extends ConverterUpdateEvent {
   final double amount;
 
-  _JustUpdateAmount(CurrencyDisplayType type, this.amount) : super(type);
+  _JustUpdateAmountAndFinishLoading(CurrencyDisplayType type, this.amount)
+      : super(type);
 }
+
+class _StartLoading extends ConverterEvent {}
+
+class _JustFinishLoading extends ConverterEvent {}
 
 class _LoadExchangeRatesArgs {
   final String baseCurrencyShortName;
@@ -58,17 +63,19 @@ class ConverterBloc extends Bloc<ConverterEvent, ConverterState> {
       String outputCurrencyShortName,
       double baseCurrencyAmount,
       CurrencyDisplayType outputDisplayType) async {
+    dispatch(_StartLoading());
     final rate = await _repository.loadExchangeRate(
         baseCurrencyShortName, outputCurrencyShortName);
     if (rate == null) {
       _argsToRetry = _LoadExchangeRatesArgs(baseCurrencyShortName,
           outputCurrencyShortName, baseCurrencyAmount, outputDisplayType);
-      return; //TODO: error handling
+      dispatch(_JustFinishLoading());
+      return;
     }
 
     _argsToRetry = null;
     final outputAmount = baseCurrencyAmount * rate;
-    dispatch(_JustUpdateAmount(
+    dispatch(_JustUpdateAmountAndFinishLoading(
         outputDisplayType, num.parse(outputAmount.toStringAsFixed(2))));
   }
 
@@ -180,18 +187,20 @@ class ConverterBloc extends Bloc<ConverterEvent, ConverterState> {
           revertedState.arrowDirection == ArrowDirection.TOWARDS_RED
               ? CurrencyDisplayType.RED
               : CurrencyDisplayType.WHITE);
-    } else if (event is _JustUpdateAmount) {
+    } else if (event is _JustUpdateAmountAndFinishLoading) {
       switch (event.type) {
         case CurrencyDisplayType.RED:
           _redCurrencyDisplaySubject
               .add(UpdateCurrencyAmount(event.amount.toStringAsFixed(2)));
-          yield currentState.copyWith(redAmount: event.amount);
+          yield currentState.copyWith(
+              redAmount: event.amount, isLoading: false);
           break;
 
         case CurrencyDisplayType.WHITE:
           _whiteCurrencyDisplaySubject
               .add(UpdateCurrencyAmount(event.amount.toStringAsFixed(2)));
-          yield currentState.copyWith(whiteAmount: event.amount);
+          yield currentState.copyWith(
+              whiteAmount: event.amount, isLoading: false);
           break;
       }
     } else if (event is RetryAfterGoingOnline) {
@@ -202,6 +211,8 @@ class ConverterBloc extends Bloc<ConverterEvent, ConverterState> {
             _argsToRetry.baseCurrencyAmount,
             _argsToRetry.outputDisplayType);
       }
+    } else if (event is _JustFinishLoading) {
+      yield currentState.copyWith(isLoading: false);
     }
   }
 

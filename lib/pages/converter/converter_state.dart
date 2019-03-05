@@ -7,12 +7,14 @@ class ConverterState {
   Currency _whiteCurrency;
   double _whiteAmount;
   ArrowDirection _arrowDirection;
+  bool _isLoading;
 
   Currency get redCurrency => _redCurrency;
   double get redAmount => _redAmount;
   Currency get whiteCurrency => _whiteCurrency;
   double get whiteAmount => _whiteAmount;
   ArrowDirection get arrowDirection => _arrowDirection;
+  bool get isLoading => _isLoading;
 
   ConverterState._();
 
@@ -22,7 +24,8 @@ class ConverterState {
       .._redAmount = defaultAmountValue
       .._whiteCurrency = defaultOutputCurrency
       .._whiteAmount = defaultAmountValue
-      .._arrowDirection = ArrowDirection.TOWARDS_WHITE;
+      .._arrowDirection = ArrowDirection.TOWARDS_WHITE
+      .._isLoading = false;
   }
 
   factory ConverterState.withRevertedCurrenciesAndArrowDirection(
@@ -34,7 +37,8 @@ class ConverterState {
       .._whiteCurrency = other._redCurrency
       .._arrowDirection = other._arrowDirection == ArrowDirection.TOWARDS_RED
           ? ArrowDirection.TOWARDS_WHITE
-          : ArrowDirection.TOWARDS_RED;
+          : ArrowDirection.TOWARDS_RED
+      .._isLoading = other.isLoading;
   }
 
   ConverterState copyWith(
@@ -42,18 +46,21 @@ class ConverterState {
       double redAmount,
       Currency whiteCurrency,
       double whiteAmount,
-      ArrowDirection arrowDirection}) {
+      ArrowDirection arrowDirection,
+      bool isLoading}) {
     redCurrency ??= this.redCurrency;
     redAmount ??= this.redAmount;
     whiteCurrency ??= this.whiteCurrency;
     whiteAmount ??= this.whiteAmount;
     arrowDirection ??= this.arrowDirection;
+    isLoading ??= this.isLoading;
     return ConverterState._()
       .._redCurrency = redCurrency
       .._redAmount = redAmount
       .._whiteCurrency = whiteCurrency
       .._whiteAmount = whiteAmount
-      .._arrowDirection = arrowDirection;
+      .._arrowDirection = arrowDirection
+      .._isLoading = isLoading;
   }
 }
 

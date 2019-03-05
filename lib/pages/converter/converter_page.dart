@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:kiwi/kiwi.dart' as dependencies;
 import 'package:flutter_offline/flutter_offline.dart';
 import 'package:minimalist_converter/common/models/currency.dart';
