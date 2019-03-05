@@ -82,7 +82,6 @@ class ConverterBloc extends Bloc<ConverterEvent, ConverterState> {
   @override
   Stream<ConverterState> mapEventToState(
       ConverterState currentState, ConverterEvent event) async* {
-    //TODO: check arrow direction - perform request to db/api if needed
     if (event is UpdateAmount) {
       switch (event.type) {
         case CurrencyDisplayType.RED:
@@ -213,6 +212,8 @@ class ConverterBloc extends Bloc<ConverterEvent, ConverterState> {
       }
     } else if (event is _JustFinishLoading) {
       yield currentState.copyWith(isLoading: false);
+    } else if (event is _StartLoading) {
+      yield currentState.copyWith(isLoading: true);
     }
   }
 

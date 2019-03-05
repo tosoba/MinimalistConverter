@@ -104,6 +104,7 @@ class _ConverterPageState extends State<ConverterPage>
 
   Widget _arrowButton(BuildContext context) {
     final converterBloc = BlocProvider.of<ConverterBloc>(context);
+    final size = 65.0;
     return Center(
         child: RawMaterialButton(
       onPressed: () => converterBloc.dispatch(SwapRedAndWhite()),
@@ -111,17 +112,29 @@ class _ConverterPageState extends State<ConverterPage>
         bloc: converterBloc,
         builder: (context, ConverterState state) {
           final orientation = MediaQuery.of(context).orientation;
-          return Icon(
-            state.arrowDirection == ArrowDirection.TOWARDS_RED
-                ? (orientation == Orientation.portrait)
-                    ? Icons.arrow_upward
-                    : Icons.arrow_back
-                : (orientation == Orientation.portrait)
-                    ? Icons.arrow_downward
-                    : Icons.arrow_forward,
-            color: AppColors.red,
-            size: 65,
-          );
+          if (state.isLoading) {
+            return Container(
+              width: size,
+              height: size,
+              child: Center(
+                child: SpinKitWave(
+                  color: AppColors.red,
+                ),
+              ),
+            );
+          } else {
+            return Icon(
+              state.arrowDirection == ArrowDirection.TOWARDS_RED
+                  ? (orientation == Orientation.portrait)
+                      ? Icons.arrow_upward
+                      : Icons.arrow_back
+                  : (orientation == Orientation.portrait)
+                      ? Icons.arrow_downward
+                      : Icons.arrow_forward,
+              color: AppColors.red,
+              size: size,
+            );
+          }
         },
       ),
       shape: CircleBorder(side: BorderSide(width: 2.0, color: AppColors.red)),
