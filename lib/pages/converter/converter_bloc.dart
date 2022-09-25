@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:minimalist_converter/common/models/currency_display_type.dart';
 import 'package:minimalist_converter/data/repository/converter_repository.dart';
@@ -25,10 +27,11 @@ class _LoadExchangeRatesArgs {
   final CurrencyDisplayType outputDisplayType;
 
   _LoadExchangeRatesArgs(
-      this.baseCurrencyShortName,
-      this.outputCurrencyShortName,
-      this.baseCurrencyAmount,
-      this.outputDisplayType);
+    this.baseCurrencyShortName,
+    this.outputCurrencyShortName,
+    this.baseCurrencyAmount,
+    this.outputDisplayType,
+  );
 }
 
 class ConverterBloc extends Bloc<ConverterEvent, ConverterState> {
@@ -44,183 +47,205 @@ class ConverterBloc extends Bloc<ConverterEvent, ConverterState> {
       _whiteCurrencyDisplaySubject.stream.distinct();
 
   CurrencyDisplayState get initialRedDisplayState => CurrencyDisplayState(
-      initialState.redCurrency, initialState.redAmount.toStringAsFixed(2));
+      _initialState.redCurrency, _initialState.redAmount.toStringAsFixed(2));
 
   CurrencyDisplayState get initialWhiteDisplayState => CurrencyDisplayState(
-      initialState.whiteCurrency, initialState.whiteAmount.toStringAsFixed(2));
+      _initialState.whiteCurrency,
+      _initialState.whiteAmount.toStringAsFixed(2));
 
   final ConverterRepository _repository;
+  final ConverterState _initialState;
 
   _LoadExchangeRatesArgs _argsToRetry;
 
-  ConverterBloc(this._repository) : super();
-
-  @override
-  ConverterState get initialState => ConverterState.initial();
-
-  _loadExchangeRateAndDispatchUpdateAmount(
-      String baseCurrencyShortName,
-      String outputCurrencyShortName,
-      double baseCurrencyAmount,
-      CurrencyDisplayType outputDisplayType) async {
-    dispatch(_StartLoading());
-    final rate = await _repository.loadExchangeRate(
-        baseCurrencyShortName, outputCurrencyShortName);
-    if (rate == null) {
-      _argsToRetry = _LoadExchangeRatesArgs(baseCurrencyShortName,
-          outputCurrencyShortName, baseCurrencyAmount, outputDisplayType);
-      dispatch(_JustFinishLoading());
-      return;
-    }
-
-    _argsToRetry = null;
-    final outputAmount = baseCurrencyAmount * rate;
-    dispatch(_JustUpdateAmountAndFinishLoading(
-        outputDisplayType, num.parse(outputAmount.toStringAsFixed(2))));
-  }
-
-  @override
-  Stream<ConverterState> mapEventToState(
-      ConverterState currentState, ConverterEvent event) async* {
-    if (event is UpdateAmount) {
+  ConverterBloc(this._repository, this._initialState) : super(_initialState) {
+    on<UpdateAmount>((event, emit) async {
       switch (event.type) {
         case CurrencyDisplayType.RED:
           _redCurrencyDisplaySubject
               .add(UpdateCurrencyAmount(event.amount.toStringAsFixed(2)));
-          if (currentState.arrowDirection == ArrowDirection.TOWARDS_RED) {
-            yield currentState.copyWith(
+          if (state.arrowDirection == ArrowDirection.TOWARDS_RED) {
+            emit(
+              state.copyWith(
                 redAmount: event.amount,
-                arrowDirection: ArrowDirection.TOWARDS_WHITE);
+                arrowDirection: ArrowDirection.TOWARDS_WHITE,
+              ),
+            );
           } else {
-            yield currentState.copyWith(redAmount: event.amount);
+            emit(state.copyWith(redAmount: event.amount));
           }
 
           await _loadExchangeRateAndDispatchUpdateAmount(
-              currentState.redCurrency.shortName,
-              currentState.whiteCurrency.shortName,
-              event.amount,
-              CurrencyDisplayType.WHITE);
+            state.redCurrency.shortName,
+            state.whiteCurrency.shortName,
+            event.amount,
+            CurrencyDisplayType.WHITE,
+          );
           break;
 
         case CurrencyDisplayType.WHITE:
           _whiteCurrencyDisplaySubject
               .add(UpdateCurrencyAmount(event.amount.toStringAsFixed(2)));
-          if (currentState.arrowDirection == ArrowDirection.TOWARDS_WHITE) {
-            yield currentState.copyWith(
-                whiteAmount: event.amount,
-                arrowDirection: ArrowDirection.TOWARDS_RED);
+          if (state.arrowDirection == ArrowDirection.TOWARDS_WHITE) {
+            emit(state.copyWith(
+              whiteAmount: event.amount,
+              arrowDirection: ArrowDirection.TOWARDS_RED,
+            ));
           } else {
-            yield currentState.copyWith(whiteAmount: event.amount);
+            emit(state.copyWith(whiteAmount: event.amount));
           }
 
           await _loadExchangeRateAndDispatchUpdateAmount(
-              currentState.whiteCurrency.shortName,
-              currentState.redCurrency.shortName,
-              event.amount,
-              CurrencyDisplayType.RED);
+            state.whiteCurrency.shortName,
+            state.redCurrency.shortName,
+            event.amount,
+            CurrencyDisplayType.RED,
+          );
           break;
       }
-    } else if (event is UpdateCurrency) {
+    });
+
+    on<UpdateCurrency>((event, emit) async {
       switch (event.type) {
         case CurrencyDisplayType.RED:
           _redCurrencyDisplaySubject
               .add(UpdateDisplayedCurrency(event.currency));
-          yield currentState.copyWith(redCurrency: event.currency);
+          emit(state.copyWith(redCurrency: event.currency));
 
           await _loadExchangeRateAndDispatchUpdateAmount(
-              currentState.arrowDirection == ArrowDirection.TOWARDS_RED
-                  ? currentState.whiteCurrency.shortName
-                  : event.currency.shortName,
-              currentState.arrowDirection == ArrowDirection.TOWARDS_RED
-                  ? event.currency.shortName
-                  : currentState.whiteCurrency.shortName,
-              currentState.arrowDirection == ArrowDirection.TOWARDS_RED
-                  ? currentState.whiteAmount
-                  : currentState.redAmount,
-              currentState.arrowDirection == ArrowDirection.TOWARDS_RED
-                  ? CurrencyDisplayType.RED
-                  : CurrencyDisplayType.WHITE);
+            state.arrowDirection == ArrowDirection.TOWARDS_RED
+                ? state.whiteCurrency.shortName
+                : event.currency.shortName,
+            state.arrowDirection == ArrowDirection.TOWARDS_RED
+                ? event.currency.shortName
+                : state.whiteCurrency.shortName,
+            state.arrowDirection == ArrowDirection.TOWARDS_RED
+                ? state.whiteAmount
+                : state.redAmount,
+            state.arrowDirection == ArrowDirection.TOWARDS_RED
+                ? CurrencyDisplayType.RED
+                : CurrencyDisplayType.WHITE,
+          );
           break;
 
         case CurrencyDisplayType.WHITE:
           _whiteCurrencyDisplaySubject
               .add(UpdateDisplayedCurrency(event.currency));
-          yield currentState.copyWith(whiteCurrency: event.currency);
+          emit(state.copyWith(whiteCurrency: event.currency));
 
           await _loadExchangeRateAndDispatchUpdateAmount(
-              currentState.arrowDirection == ArrowDirection.TOWARDS_RED
-                  ? event.currency.shortName
-                  : currentState.redCurrency.shortName,
-              currentState.arrowDirection == ArrowDirection.TOWARDS_RED
-                  ? currentState.redCurrency.shortName
-                  : event.currency.shortName,
-              currentState.arrowDirection == ArrowDirection.TOWARDS_RED
-                  ? currentState.whiteAmount
-                  : currentState.redAmount,
-              currentState.arrowDirection == ArrowDirection.TOWARDS_RED
-                  ? CurrencyDisplayType.RED
-                  : CurrencyDisplayType.WHITE);
+            state.arrowDirection == ArrowDirection.TOWARDS_RED
+                ? event.currency.shortName
+                : state.redCurrency.shortName,
+            state.arrowDirection == ArrowDirection.TOWARDS_RED
+                ? state.redCurrency.shortName
+                : event.currency.shortName,
+            state.arrowDirection == ArrowDirection.TOWARDS_RED
+                ? state.whiteAmount
+                : state.redAmount,
+            state.arrowDirection == ArrowDirection.TOWARDS_RED
+                ? CurrencyDisplayType.RED
+                : CurrencyDisplayType.WHITE,
+          );
           break;
       }
-    } else if (event is SwapRedAndWhite) {
+    });
+
+    on<SwapRedAndWhite>((event, emit) async {
       final revertedState =
-          ConverterState.withRevertedCurrenciesAndArrowDirection(currentState);
+          ConverterState.withRevertedCurrenciesAndArrowDirection(state);
 
       _redCurrencyDisplaySubject
           .add(UpdateDisplayedCurrency(revertedState.redCurrency));
       _whiteCurrencyDisplaySubject
           .add(UpdateDisplayedCurrency(revertedState.whiteCurrency));
 
-      yield revertedState;
+      emit(revertedState);
 
       await _loadExchangeRateAndDispatchUpdateAmount(
-          revertedState.arrowDirection == ArrowDirection.TOWARDS_RED
-              ? revertedState.whiteCurrency.shortName
-              : revertedState.redCurrency.shortName,
-          revertedState.arrowDirection == ArrowDirection.TOWARDS_RED
-              ? revertedState.redCurrency.shortName
-              : revertedState.whiteCurrency.shortName,
-          revertedState.arrowDirection == ArrowDirection.TOWARDS_RED
-              ? revertedState.whiteAmount
-              : revertedState.redAmount,
-          revertedState.arrowDirection == ArrowDirection.TOWARDS_RED
-              ? CurrencyDisplayType.RED
-              : CurrencyDisplayType.WHITE);
-    } else if (event is _JustUpdateAmountAndFinishLoading) {
+        revertedState.arrowDirection == ArrowDirection.TOWARDS_RED
+            ? revertedState.whiteCurrency.shortName
+            : revertedState.redCurrency.shortName,
+        revertedState.arrowDirection == ArrowDirection.TOWARDS_RED
+            ? revertedState.redCurrency.shortName
+            : revertedState.whiteCurrency.shortName,
+        revertedState.arrowDirection == ArrowDirection.TOWARDS_RED
+            ? revertedState.whiteAmount
+            : revertedState.redAmount,
+        revertedState.arrowDirection == ArrowDirection.TOWARDS_RED
+            ? CurrencyDisplayType.RED
+            : CurrencyDisplayType.WHITE,
+      );
+    });
+
+    on<_JustUpdateAmountAndFinishLoading>((event, emit) {
       switch (event.type) {
         case CurrencyDisplayType.RED:
           _redCurrencyDisplaySubject
               .add(UpdateCurrencyAmount(event.amount.toStringAsFixed(2)));
-          yield currentState.copyWith(
-              redAmount: event.amount, isLoading: false);
+          emit(state.copyWith(redAmount: event.amount, isLoading: false));
           break;
 
         case CurrencyDisplayType.WHITE:
           _whiteCurrencyDisplaySubject
               .add(UpdateCurrencyAmount(event.amount.toStringAsFixed(2)));
-          yield currentState.copyWith(
-              whiteAmount: event.amount, isLoading: false);
+          emit(state.copyWith(whiteAmount: event.amount, isLoading: false));
           break;
       }
-    } else if (event is RetryAfterGoingOnline) {
+    });
+
+    on<RetryAfterGoingOnline>((event, emit) async {
       if (_argsToRetry != null) {
-        _loadExchangeRateAndDispatchUpdateAmount(
-            _argsToRetry.baseCurrencyShortName,
-            _argsToRetry.outputCurrencyShortName,
-            _argsToRetry.baseCurrencyAmount,
-            _argsToRetry.outputDisplayType);
+        await _loadExchangeRateAndDispatchUpdateAmount(
+          _argsToRetry.baseCurrencyShortName,
+          _argsToRetry.outputCurrencyShortName,
+          _argsToRetry.baseCurrencyAmount,
+          _argsToRetry.outputDisplayType,
+        );
       }
-    } else if (event is _JustFinishLoading) {
-      yield currentState.copyWith(isLoading: false);
-    } else if (event is _StartLoading) {
-      yield currentState.copyWith(isLoading: true);
+    });
+
+    on<_JustFinishLoading>(
+        (event, emit) => emit(state.copyWith(isLoading: false)));
+
+    on<_StartLoading>((event, emit) => emit(state.copyWith(isLoading: true)));
+  }
+
+  _loadExchangeRateAndDispatchUpdateAmount(
+      String baseCurrencyShortName,
+      String outputCurrencyShortName,
+      double baseCurrencyAmount,
+      CurrencyDisplayType outputDisplayType) async {
+    add(_StartLoading());
+    final rate = await _repository.loadExchangeRate(
+      baseCurrencyShortName,
+      outputCurrencyShortName,
+    );
+    if (rate == null) {
+      _argsToRetry = _LoadExchangeRatesArgs(
+        baseCurrencyShortName,
+        outputCurrencyShortName,
+        baseCurrencyAmount,
+        outputDisplayType,
+      );
+      add(_JustFinishLoading());
+      return;
     }
+
+    _argsToRetry = null;
+    final outputAmount = baseCurrencyAmount * rate;
+    add(
+      _JustUpdateAmountAndFinishLoading(
+        outputDisplayType,
+        num.parse(outputAmount.toStringAsFixed(2)),
+      ),
+    );
   }
 
   @override
-  void dispose() {
+  Future<void> close() async {
     _redCurrencyDisplaySubject.close();
     _whiteCurrencyDisplaySubject.close();
-    super.dispose();
+    super.close();
   }
 }

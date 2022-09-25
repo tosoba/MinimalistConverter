@@ -22,20 +22,19 @@ class CurrencyListPage extends StatelessWidget {
       child: RawMaterialButton(
         shape: CircleBorder(),
         onPressed: () => Navigator.pop(context),
-        child: Icon(
-          Icons.arrow_back,
-          color: _accentColor,
-        ),
+        child: Icon(Icons.arrow_back, color: _accentColor),
       ),
     );
   }
 
   Widget _currenciesList(BuildContext context) {
     return ListView.builder(
-        itemBuilder: (BuildContext context, int index) {
-          return _CurrencyListItem(currencies[index], _displayType);
-        },
-        itemCount: currencies.length);
+      itemBuilder: (BuildContext context, int index) => _CurrencyListItem(
+        currencies[index],
+        _displayType,
+      ),
+      itemCount: currencies.length,
+    );
   }
 
   @override
@@ -51,9 +50,7 @@ class CurrencyListPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
                 _backButton(context),
-                Expanded(
-                  child: _currenciesList(context),
-                )
+                Expanded(child: _currenciesList(context))
               ],
             ),
           ),
@@ -66,8 +63,10 @@ class CurrencyListPage extends StatelessWidget {
 class _CurrencyListItem extends StatelessWidget {
   final Currency _currency;
   final CurrencyDisplayType _displayType;
+
   Color get _longNameColor =>
       AppColors.accentForCurrencyDisplayType(_displayType);
+
   Color get _shortNameColor =>
       AppColors.accentForCurrencyDisplayType(_displayType);
 
@@ -87,18 +86,20 @@ class _CurrencyListItem extends StatelessWidget {
             Text(
               _currency.longName,
               style: TextStyle(
-                  fontSize: 17,
-                  color: _longNameColor,
-                  fontFamily: AppFonts.quicksand),
+                fontSize: 17,
+                color: _longNameColor,
+                fontFamily: AppFonts.quicksand,
+              ),
             ),
             Padding(
               padding: EdgeInsets.only(left: 3.0),
               child: Text(
                 _currency.shortName,
                 style: TextStyle(
-                    fontSize: 15,
-                    color: _shortNameColor,
-                    fontFamily: AppFonts.quicksand),
+                  fontSize: 15,
+                  color: _shortNameColor,
+                  fontFamily: AppFonts.quicksand,
+                ),
               ),
             )
           ],

@@ -18,14 +18,15 @@ dependencies:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^0.1.2
+  cupertino_icons: ^1.0.5
 
-  flutter_bloc: ^0.7.0
-  kiwi: ^0.1.0
-  auto_size_text: ^1.0.0
-  http: ^0.12.0+1
-  flutter_offline: "^0.2.4"
-  flutter_spinkit: "^3.1.0"
+  flutter_bloc: ^8.1.1
+  kiwi: ^4.0.2
+  auto_size_text: ^3.0.0
+  http: ^0.13.5
+  flutter_offline: ^2.1.0
+  flutter_spinkit: ^5.1.0
+  rxdart: ^0.27.5
 
 dev_dependencies:
   flutter_test:

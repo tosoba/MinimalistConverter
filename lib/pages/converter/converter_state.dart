@@ -10,10 +10,15 @@ class ConverterState {
   bool _isLoading;
 
   Currency get redCurrency => _redCurrency;
+
   double get redAmount => _redAmount;
+
   Currency get whiteCurrency => _whiteCurrency;
+
   double get whiteAmount => _whiteAmount;
+
   ArrowDirection get arrowDirection => _arrowDirection;
+
   bool get isLoading => _isLoading;
 
   ConverterState._();
@@ -29,7 +34,8 @@ class ConverterState {
   }
 
   factory ConverterState.withRevertedCurrenciesAndArrowDirection(
-      ConverterState other) {
+    ConverterState other,
+  ) {
     return ConverterState._()
       .._redAmount = other._redAmount
       .._whiteAmount = other._whiteAmount
@@ -41,13 +47,14 @@ class ConverterState {
       .._isLoading = other.isLoading;
   }
 
-  ConverterState copyWith(
-      {Currency redCurrency,
-      double redAmount,
-      Currency whiteCurrency,
-      double whiteAmount,
-      ArrowDirection arrowDirection,
-      bool isLoading}) {
+  ConverterState copyWith({
+    Currency redCurrency,
+    double redAmount,
+    Currency whiteCurrency,
+    double whiteAmount,
+    ArrowDirection arrowDirection,
+    bool isLoading,
+  }) {
     redCurrency ??= this.redCurrency;
     redAmount ??= this.redAmount;
     whiteCurrency ??= this.whiteCurrency;
@@ -65,6 +72,6 @@ class ConverterState {
 }
 
 enum ArrowDirection {
-  TOWARDS_RED, // means that red display acts as output for converstion result and white as input for conversion
+  TOWARDS_RED, // means that red display acts as output for conversion result and white as input for conversion
   TOWARDS_WHITE // means the same as above the other way around
 }

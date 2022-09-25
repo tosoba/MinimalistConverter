@@ -1,13 +1,20 @@
 import 'package:minimalist_converter/data/model/exchange_rates_response.dart';
 
 class ConverterLocalDataSource {
-  final Map<String, Map<String, double>> _cache = Map();
+  final Map<String, double> _cache = Map();
 
   void storeRatesFrom(ExchangeRatesResponse response) {
-    _cache[response.baseCurrencyShortName] = response.exchangeRates;
+    _cache[_cacheKey(
+            response.baseCurrencyShortName, response.outputCurrencyShortName)] =
+        response.rate;
   }
 
-  Map<String, double> getRatesForCurrencyWith(String shortName) {
-    return _cache.containsKey(shortName) ? _cache[shortName] : null;
+  String _cacheKey(
+          String baseCurrencyShortName, String outputCurrencyShortName) =>
+      baseCurrencyShortName + "-" + outputCurrencyShortName;
+
+  double getRate(String baseCurrencyShortName, String outputCurrencyShortName) {
+    final key = _cacheKey(baseCurrencyShortName, outputCurrencyShortName);
+    return _cache.containsKey(key) ? _cache[key] : null;
   }
 }

@@ -1,9 +1,8 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:kiwi/kiwi.dart' as dependencies;
 import 'package:minimalist_converter/common/models/currency_display_type.dart';
 import 'package:minimalist_converter/common/values/colors.dart';
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:minimalist_converter/common/values/fonts.dart';
 import 'package:minimalist_converter/pages/input/input_bloc.dart';
 import 'package:minimalist_converter/pages/input/input_event.dart';
@@ -33,16 +32,17 @@ class _InputPageState extends State<InputPage> {
           : AlignmentDirectional.topCenter,
       child: RawMaterialButton(
         onPressed: () =>
-            BlocProvider.of<InputBloc>(context).dispatch(RemoveLastCharacter()),
+            BlocProvider.of<InputBloc>(context).add(RemoveLastCharacter()),
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 10.0),
           child: Text(
             'tap to delete',
             style: TextStyle(
-                color: _accentColor,
-                fontSize: 17.0,
-                fontFamily: AppFonts.quicksand,
-                fontWeight: FontWeight.bold),
+              color: _accentColor,
+              fontSize: 17.0,
+              fontFamily: AppFonts.quicksand,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       ),
@@ -60,14 +60,15 @@ class _InputPageState extends State<InputPage> {
       child: BlocBuilder(
         bloc: BlocProvider.of<InputBloc>(context),
         builder: (context, InputState state) => AutoSizeText(
-              state.input,
-              maxLines: 1,
-              style: TextStyle(
-                  color: _accentColor,
-                  fontSize: 90.0,
-                  fontFamily: AppFonts.quicksand,
-                  fontWeight: FontWeight.bold),
-            ),
+          state.input,
+          maxLines: 1,
+          style: TextStyle(
+            color: _accentColor,
+            fontSize: 90.0,
+            fontFamily: AppFonts.quicksand,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
     );
   }
@@ -76,13 +77,10 @@ class _InputPageState extends State<InputPage> {
     return Padding(
       padding: EdgeInsets.fromLTRB(15.0, 5.0, 15.0, 5.0),
       child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: buttons
-              .map((button) => Expanded(
-                    child: button,
-                  ))
-              .toList()),
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: buttons.map((button) => Expanded(child: button)).toList(),
+      ),
     );
   }
 
@@ -94,59 +92,93 @@ class _InputPageState extends State<InputPage> {
       child: RawMaterialButton(
         onPressed: () => Navigator.pop(context),
         shape: CircleBorder(),
-        child: Icon(
-          Icons.arrow_back,
-          color: _accentColor,
-        ),
+        child: Icon(Icons.arrow_back, color: _accentColor),
       ),
     );
   }
 
   Function _onInputButtonTextPressed(String character, BuildContext context) {
-    return () => BlocProvider.of<InputBloc>(context)
-        .dispatch(AppendNewCharacter(character));
+    return () => BlocProvider.of<InputBloc>(context).add(
+          AppendNewCharacter(character),
+        );
   }
 
   Function _onSubmitButtonPressed(BuildContext context) {
     return () => Navigator.pop(
-        context, BlocProvider.of<InputBloc>(context).currentState.input);
+          context,
+          BlocProvider.of<InputBloc>(context).state.input,
+        );
   }
 
   List<Widget> _verticalButtonRows(BuildContext context) {
     return [
       _inputButtonsRow([
-        _InputButton(_accentColor, _inputButtonText('1'),
-            _onInputButtonTextPressed('1', context)),
-        _InputButton(_accentColor, _inputButtonText('2'),
-            _onInputButtonTextPressed('2', context)),
-        _InputButton(_accentColor, _inputButtonText('3'),
-            _onInputButtonTextPressed('3', context)),
-      ]),
-      _inputButtonsRow([
-        _InputButton(_accentColor, _inputButtonText('4'),
-            _onInputButtonTextPressed('4', context)),
-        _InputButton(_accentColor, _inputButtonText('5'),
-            _onInputButtonTextPressed('5', context)),
-        _InputButton(_accentColor, _inputButtonText('6'),
-            _onInputButtonTextPressed('6', context)),
-      ]),
-      _inputButtonsRow([
-        _InputButton(_accentColor, _inputButtonText('7'),
-            _onInputButtonTextPressed('7', context)),
-        _InputButton(_accentColor, _inputButtonText('8'),
-            _onInputButtonTextPressed('8', context)),
-        _InputButton(_accentColor, _inputButtonText('9'),
-            _onInputButtonTextPressed('9', context)),
-      ]),
-      _inputButtonsRow([
-        _InputButton(_accentColor, _inputButtonText(','),
-            _onInputButtonTextPressed(',', context)),
-        _InputButton(_accentColor, _inputButtonText('0'),
-            _onInputButtonTextPressed('0', context)),
         _InputButton(
-            _accentColor,
-            _inputButtonIcon(Icons.subdirectory_arrow_left),
-            _onSubmitButtonPressed(context)),
+          _accentColor,
+          _inputButtonText('1'),
+          _onInputButtonTextPressed('1', context),
+        ),
+        _InputButton(
+          _accentColor,
+          _inputButtonText('2'),
+          _onInputButtonTextPressed('2', context),
+        ),
+        _InputButton(
+          _accentColor,
+          _inputButtonText('3'),
+          _onInputButtonTextPressed('3', context),
+        ),
+      ]),
+      _inputButtonsRow([
+        _InputButton(
+          _accentColor,
+          _inputButtonText('4'),
+          _onInputButtonTextPressed('4', context),
+        ),
+        _InputButton(
+          _accentColor,
+          _inputButtonText('5'),
+          _onInputButtonTextPressed('5', context),
+        ),
+        _InputButton(
+          _accentColor,
+          _inputButtonText('6'),
+          _onInputButtonTextPressed('6', context),
+        ),
+      ]),
+      _inputButtonsRow([
+        _InputButton(
+          _accentColor,
+          _inputButtonText('7'),
+          _onInputButtonTextPressed('7', context),
+        ),
+        _InputButton(
+          _accentColor,
+          _inputButtonText('8'),
+          _onInputButtonTextPressed('8', context),
+        ),
+        _InputButton(
+          _accentColor,
+          _inputButtonText('9'),
+          _onInputButtonTextPressed('9', context),
+        ),
+      ]),
+      _inputButtonsRow([
+        _InputButton(
+          _accentColor,
+          _inputButtonText(','),
+          _onInputButtonTextPressed(',', context),
+        ),
+        _InputButton(
+          _accentColor,
+          _inputButtonText('0'),
+          _onInputButtonTextPressed('0', context),
+        ),
+        _InputButton(
+          _accentColor,
+          _inputButtonIcon(Icons.subdirectory_arrow_left),
+          _onSubmitButtonPressed(context),
+        ),
       ]),
     ];
   }
@@ -154,36 +186,70 @@ class _InputPageState extends State<InputPage> {
   List<Widget> _horizontalButtonRows(BuildContext context) {
     return [
       _inputButtonsRow([
-        _InputButton(_accentColor, _inputButtonText('1'),
-            _onInputButtonTextPressed('1', context)),
-        _InputButton(_accentColor, _inputButtonText('2'),
-            _onInputButtonTextPressed('2', context)),
-        _InputButton(_accentColor, _inputButtonText('3'),
-            _onInputButtonTextPressed('3', context)),
-        _InputButton(_accentColor, _inputButtonText(','),
-            _onInputButtonTextPressed(',', context)),
-      ]),
-      _inputButtonsRow([
-        _InputButton(_accentColor, _inputButtonText('4'),
-            _onInputButtonTextPressed('4', context)),
-        _InputButton(_accentColor, _inputButtonText('5'),
-            _onInputButtonTextPressed('5', context)),
-        _InputButton(_accentColor, _inputButtonText('6'),
-            _onInputButtonTextPressed('6', context)),
-        _InputButton(_accentColor, _inputButtonText('0'),
-            _onInputButtonTextPressed('0', context)),
-      ]),
-      _inputButtonsRow([
-        _InputButton(_accentColor, _inputButtonText('7'),
-            _onInputButtonTextPressed('7', context)),
-        _InputButton(_accentColor, _inputButtonText('8'),
-            _onInputButtonTextPressed('8', context)),
-        _InputButton(_accentColor, _inputButtonText('9'),
-            _onInputButtonTextPressed('9', context)),
         _InputButton(
-            _accentColor,
-            _inputButtonIcon(Icons.subdirectory_arrow_left),
-            _onSubmitButtonPressed(context)),
+          _accentColor,
+          _inputButtonText('1'),
+          _onInputButtonTextPressed('1', context),
+        ),
+        _InputButton(
+          _accentColor,
+          _inputButtonText('2'),
+          _onInputButtonTextPressed('2', context),
+        ),
+        _InputButton(
+          _accentColor,
+          _inputButtonText('3'),
+          _onInputButtonTextPressed('3', context),
+        ),
+        _InputButton(
+          _accentColor,
+          _inputButtonText(','),
+          _onInputButtonTextPressed(',', context),
+        ),
+      ]),
+      _inputButtonsRow([
+        _InputButton(
+          _accentColor,
+          _inputButtonText('4'),
+          _onInputButtonTextPressed('4', context),
+        ),
+        _InputButton(
+          _accentColor,
+          _inputButtonText('5'),
+          _onInputButtonTextPressed('5', context),
+        ),
+        _InputButton(
+          _accentColor,
+          _inputButtonText('6'),
+          _onInputButtonTextPressed('6', context),
+        ),
+        _InputButton(
+          _accentColor,
+          _inputButtonText('0'),
+          _onInputButtonTextPressed('0', context),
+        ),
+      ]),
+      _inputButtonsRow([
+        _InputButton(
+          _accentColor,
+          _inputButtonText('7'),
+          _onInputButtonTextPressed('7', context),
+        ),
+        _InputButton(
+          _accentColor,
+          _inputButtonText('8'),
+          _onInputButtonTextPressed('8', context),
+        ),
+        _InputButton(
+          _accentColor,
+          _inputButtonText('9'),
+          _onInputButtonTextPressed('9', context),
+        ),
+        _InputButton(
+          _accentColor,
+          _inputButtonIcon(Icons.subdirectory_arrow_left),
+          _onSubmitButtonPressed(context),
+        ),
       ])
     ];
   }
@@ -196,40 +262,24 @@ class _InputPageState extends State<InputPage> {
   }
 
   Widget _inputButtonIcon(IconData iconData) {
-    return Icon(
-      iconData,
-      color: _backgroundColor,
-      size: 30.0,
-    );
+    return Icon(iconData, color: _backgroundColor, size: 30.0);
   }
 
   List<Widget> _verticalColumnWidgets(BuildContext context) {
     final widgets = [
       Expanded(flex: 2, child: _backAndBackspaceButtonsRow(context)),
-      Expanded(
-        flex: 4,
-        child: _inputTextField(context),
-      )
+      Expanded(flex: 4, child: _inputTextField(context))
     ];
     widgets.addAll(_verticalButtonRows(context)
-        .map((row) => Expanded(
-              flex: 3,
-              child: row,
-            ))
+        .map((row) => Expanded(flex: 3, child: row))
         .toList());
-    widgets.add(Expanded(
-      flex: 1,
-      child: SizedBox(),
-    ));
+    widgets.add(Expanded(flex: 1, child: SizedBox()));
     return widgets;
   }
 
   Widget _backAndBackspaceButtonsRow(BuildContext context) {
     return Stack(
-      children: <Widget>[
-        _backButton(context),
-        _tapToDeleteButton(context),
-      ],
+      children: <Widget>[_backButton(context), _tapToDeleteButton(context)],
     );
   }
 
@@ -264,10 +314,7 @@ class _InputPageState extends State<InputPage> {
                     flex: 4,
                     child: Column(
                       children: _horizontalButtonRows(context)
-                          .map((row) => Expanded(
-                                flex: 3,
-                                child: row,
-                              ))
+                          .map((row) => Expanded(flex: 3, child: row))
                           .toList(),
                     ),
                   )
@@ -276,18 +323,9 @@ class _InputPageState extends State<InputPage> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    dependencies.Container().resolve<InputBloc>().dispatch(Clear());
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Material(
-        color: _backgroundColor,
-        child: _mainWidget(context),
-      ),
+      body: Material(color: _backgroundColor, child: _mainWidget(context)),
     );
   }
 }

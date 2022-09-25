@@ -1,8 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_offline/flutter_offline.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:kiwi/kiwi.dart' as dependencies;
-import 'package:flutter_offline/flutter_offline.dart';
 import 'package:minimalist_converter/common/models/currency.dart';
 import 'package:minimalist_converter/common/models/currency_display_type.dart';
 import 'package:minimalist_converter/common/values/colors.dart';
@@ -22,10 +24,9 @@ class ConverterPage extends StatefulWidget {
 
 class _ConverterPageState extends State<ConverterPage>
     with TickerProviderStateMixin {
-  final CurrencyDisplayBloc _redDisplayBloc = dependencies.Container()
+  final CurrencyDisplayBloc _redDisplayBloc = dependencies.KiwiContainer()
       .resolve<CurrencyDisplayBloc>("red_currency_display_bloc");
-
-  final CurrencyDisplayBloc _whiteDisplayBloc = dependencies.Container()
+  final CurrencyDisplayBloc _whiteDisplayBloc = dependencies.KiwiContainer()
       .resolve<CurrencyDisplayBloc>("white_currency_display_bloc");
 
   bool wasOffline = false;
@@ -34,20 +35,22 @@ class _ConverterPageState extends State<ConverterPage>
         Expanded(
           flex: 1,
           child: BlocProvider(
-              child: CurrencyDisplayWidget(
-                  CurrencyDisplayType.RED,
-                  _showInputPageAndHandleResult,
-                  _showCurrencyListPageAndHandleResult),
-              bloc: _redDisplayBloc),
+            child: CurrencyDisplayWidget(
+                CurrencyDisplayType.RED,
+                _showInputPageAndHandleResult,
+                _showCurrencyListPageAndHandleResult),
+            create: (BuildContext context) => _redDisplayBloc,
+          ),
         ),
         Expanded(
             flex: 1,
             child: BlocProvider(
-                child: CurrencyDisplayWidget(
-                    CurrencyDisplayType.WHITE,
-                    _showInputPageAndHandleResult,
-                    _showCurrencyListPageAndHandleResult),
-                bloc: _whiteDisplayBloc)),
+              child: CurrencyDisplayWidget(
+                  CurrencyDisplayType.WHITE,
+                  _showInputPageAndHandleResult,
+                  _showCurrencyListPageAndHandleResult),
+              create: (BuildContext context) => _whiteDisplayBloc,
+            )),
       ];
 
   void _showInputPageAndHandleResult(
@@ -57,7 +60,7 @@ class _ConverterPageState extends State<ConverterPage>
     if (result != null) {
       double amount = double.tryParse(result) ?? 0.0;
       BlocProvider.of<ConverterBloc>(context)
-          .dispatch(UpdateAmount(displayType, amount));
+          .add(UpdateAmount(displayType, amount));
     }
   }
 
@@ -67,8 +70,9 @@ class _ConverterPageState extends State<ConverterPage>
       context,
       MaterialPageRoute(
           builder: (context) => BlocProvider(
-              child: InputPage(displayType),
-              bloc: dependencies.Container().resolve<InputBloc>())),
+                child: InputPage(displayType),
+                create: (BuildContext context) => InputBloc(),
+              )),
     );
   }
 
@@ -77,7 +81,7 @@ class _ConverterPageState extends State<ConverterPage>
     final result = await _showCurrenciesList(context, displayType);
     if (result != null) {
       BlocProvider.of<ConverterBloc>(context)
-          .dispatch(UpdateCurrency(displayType, result));
+          .add(UpdateCurrency(displayType, result));
     }
   }
 
@@ -107,7 +111,7 @@ class _ConverterPageState extends State<ConverterPage>
     final size = 65.0;
     return Center(
         child: RawMaterialButton(
-      onPressed: () => converterBloc.dispatch(SwapRedAndWhite()),
+      onPressed: () => converterBloc.add(SwapRedAndWhite()),
       child: BlocBuilder(
         bloc: converterBloc,
         builder: (context, ConverterState state) {
@@ -172,7 +176,7 @@ class _ConverterPageState extends State<ConverterPage>
         if (connected) {
           if (wasOffline) {
             BlocProvider.of<ConverterBloc>(context)
-                .dispatch(RetryAfterGoingOnline());
+                .add(RetryAfterGoingOnline());
             _onlineMessageAnimationController.forward(from: 0.0);
             final onlineMessage = _OnlineMessage(
               connectionInfoBox,
@@ -225,8 +229,8 @@ class _ConverterPageState extends State<ConverterPage>
 
   @override
   void dispose() {
-    _redDisplayBloc.dispose();
-    _whiteDisplayBloc.dispose();
+    _redDisplayBloc.close();
+    _whiteDisplayBloc.close();
     super.dispose();
   }
 }

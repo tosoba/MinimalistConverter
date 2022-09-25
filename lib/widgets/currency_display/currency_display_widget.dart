@@ -1,6 +1,6 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:minimalist_converter/common/models/currency_display_type.dart';
 import 'package:minimalist_converter/common/models/inset_type.dart';
 import 'package:minimalist_converter/common/values/colors.dart';
@@ -23,7 +23,7 @@ class CurrencyDisplayWidget extends StatelessWidget {
   Color get _textColor => AppColors.accentForCurrencyDisplayType(_displayType);
 
   Widget _currencyLongNameWidget(String text, BuildContext context) => Center(
-      child: RawMaterialButton(
+        child: RawMaterialButton(
           onPressed: () async =>
               await _onLongNameWidgetPressed(context, _displayType),
           child: Padding(
@@ -32,21 +32,27 @@ class CurrencyDisplayWidget extends StatelessWidget {
               text,
               textAlign: TextAlign.center,
               style: TextStyle(
-                  color: _textColor,
-                  fontSize: 22.0,
-                  fontFamily: AppFonts.quicksand),
+                color: _textColor,
+                fontSize: 22.0,
+                fontFamily: AppFonts.quicksand,
+              ),
             ),
-          )));
+          ),
+        ),
+      );
 
   Widget _currencyValueWidget(String text, BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    final fontSize = MediaQuery.of(context).orientation == Orientation.portrait
-        ? height / 8
-        : height / 4;
+    final fontSize = (MediaQuery.of(context).orientation == Orientation.portrait
+            ? height / 8
+            : height / 4)
+        .floorToDouble();
     return Center(
       child: RawMaterialButton(
-          onPressed: () async =>
-              await _onValueWidgetPressed(context, _displayType),
+          onPressed: () async => await _onValueWidgetPressed(
+                context,
+                _displayType,
+              ),
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 10.0),
             child: AutoSizeText(
@@ -55,9 +61,10 @@ class CurrencyDisplayWidget extends StatelessWidget {
               maxFontSize: fontSize,
               textAlign: TextAlign.center,
               style: TextStyle(
-                  color: _textColor,
-                  fontSize: fontSize,
-                  fontFamily: AppFonts.quicksand),
+                color: _textColor,
+                fontSize: fontSize,
+                fontFamily: AppFonts.quicksand,
+              ),
             ),
           )),
     );
@@ -67,10 +74,11 @@ class CurrencyDisplayWidget extends StatelessWidget {
         text,
         textAlign: TextAlign.center,
         style: TextStyle(
-            color: _textColor,
-            fontSize: 17.0,
-            fontFamily: AppFonts.quicksand,
-            fontWeight: FontWeight.bold),
+          color: _textColor,
+          fontSize: 17.0,
+          fontFamily: AppFonts.quicksand,
+          fontWeight: FontWeight.bold,
+        ),
       );
 
   EdgeInsets _edgeInsets(InsetType insetType, double insetValue) {
@@ -99,8 +107,10 @@ class CurrencyDisplayWidget extends StatelessWidget {
           _currencyValueWidget(state.displayValue, context),
           Padding(
             child: _currencyShortNameWidget(state.currency.shortName),
-            padding:
-                _edgeInsets(InsetType.BOTTOM, _arrowButtonSideEdgeInsetValue),
+            padding: _edgeInsets(
+              InsetType.BOTTOM,
+              _arrowButtonSideEdgeInsetValue,
+            ),
           )
         ];
       } else {
@@ -112,8 +122,10 @@ class CurrencyDisplayWidget extends StatelessWidget {
           _currencyValueWidget(state.displayValue, context),
           Padding(
             child: _currencyLongNameWidget(state.currency.longName, context),
-            padding:
-                _edgeInsets(InsetType.BOTTOM, _differentSideEdgeInsetValue),
+            padding: _edgeInsets(
+              InsetType.BOTTOM,
+              _differentSideEdgeInsetValue,
+            ),
           )
         ];
       }
@@ -126,13 +138,17 @@ class CurrencyDisplayWidget extends StatelessWidget {
           ),
           Padding(
             child: _currencyValueWidget(state.displayValue, context),
-            padding:
-                _edgeInsets(InsetType.RIGHT, _arrowButtonSideEdgeInsetValue),
+            padding: _edgeInsets(
+              InsetType.RIGHT,
+              _arrowButtonSideEdgeInsetValue,
+            ),
           ),
           Padding(
             child: _currencyShortNameWidget(state.currency.shortName),
-            padding:
-                _edgeInsets(InsetType.BOTTOM, _differentSideEdgeInsetValue),
+            padding: _edgeInsets(
+              InsetType.BOTTOM,
+              _differentSideEdgeInsetValue,
+            ),
           )
         ];
       } else {
@@ -143,13 +159,17 @@ class CurrencyDisplayWidget extends StatelessWidget {
           ),
           Padding(
             child: _currencyValueWidget(state.displayValue, context),
-            padding:
-                _edgeInsets(InsetType.LEFT, _arrowButtonSideEdgeInsetValue),
+            padding: _edgeInsets(
+              InsetType.LEFT,
+              _arrowButtonSideEdgeInsetValue,
+            ),
           ),
           Padding(
             child: _currencyShortNameWidget(state.currency.shortName),
-            padding:
-                _edgeInsets(InsetType.BOTTOM, _differentSideEdgeInsetValue),
+            padding: _edgeInsets(
+              InsetType.BOTTOM,
+              _differentSideEdgeInsetValue,
+            ),
           )
         ];
       }
@@ -161,14 +181,18 @@ class CurrencyDisplayWidget extends StatelessWidget {
         bloc: BlocProvider.of<CurrencyDisplayBloc>(context),
         builder: (context, CurrencyDisplayState state) {
           return Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: _columnWidgets(context, state));
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: _columnWidgets(context, state),
+          );
         });
   }
 
-  CurrencyDisplayWidget(this._displayType, this._onValueWidgetPressed,
-      this._onLongNameWidgetPressed);
+  CurrencyDisplayWidget(
+    this._displayType,
+    this._onValueWidgetPressed,
+    this._onLongNameWidgetPressed,
+  );
 
   @override
   Widget build(BuildContext context) {

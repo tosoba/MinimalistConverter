@@ -14,9 +14,10 @@ class InputState {
   }
 
   factory InputState.withLastCharacterRemoved(InputState other) {
-    if (other.input.isEmpty)
+    if (other.input.isEmpty) {
       return InputState._("");
-    else
+    } else {
       return InputState._(other._input.substring(0, other._input.length - 1));
+    }
   }
 }
