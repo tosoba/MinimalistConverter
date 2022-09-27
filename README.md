@@ -1,16 +1,43 @@
-# minimalist_converter
+<a name="readme-top"></a>
 
-A new Flutter project.
+<!-- PROJECT LOGO -->
+<br />
+<div align="center">
+<img src="https://raw.githubusercontent.com/tosoba/MinimalistConverter/master/Logo.png" alt="Logo" width="150" height="150">
 
-## Getting Started
+<h2 align="center">MinimalistConverter</h2>
+</div>
 
-This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Lab: Write your first Flutter app](https://flutter.io/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.io/docs/cookbook)
+<!-- TABLE OF CONTENTS -->
+<details>
+  <summary>Table of Contents</summary>
+  <ol>
+    <li>
+      <a href="#about-the-project">About The Project</a>
+    </li>
+    <li><a href="#license">License</a></li>
+  </ol>
+</details>
 
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.io/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+
+
+<!-- ABOUT THE PROJECT -->
+## About The Project
+
+<img src="https://raw.githubusercontent.com/tosoba/MinimalistConverter/master/Screenshot.png" alt="Logo" width="270" height="570">
+
+A currency converter flutter app. It's an old project from 2018 so various issues are to be expected.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+
+<!-- LICENSE -->
+## License
+
+Distributed under the MIT License. See `LICENSE.md` for more information.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
