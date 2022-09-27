@@ -166,8 +166,8 @@ class _InputPageState extends State<InputPage> {
       _inputButtonsRow([
         _InputButton(
           _accentColor,
-          _inputButtonText(','),
-          _onInputButtonTextPressed(',', context),
+          _inputButtonText('.'),
+          _onInputButtonTextPressed('.', context),
         ),
         _InputButton(
           _accentColor,
